@@ -1,0 +1,357 @@
+﻿================================================================================
+【 코드 빠른 참조 가이드 】- 각 부분이 어디에 있는지 찾기
+================================================================================
+
+📚 목차
+┌─ 1. 파일 목록
+├─ 2. 각 파일별 핵심 함수
+├─ 3. 게임 흐름 트레이싱
+├─ 4. 배터리 로직
+├─ 5. 배터리 감소 흐름
+└─ 6. 추가 기능 시 수정할 위치
+
+================================================================================
+【 1. 파일 목록 】
+================================================================================
+
+🔴 핵심 파일 (반드시 이해해야 함):
+  • GameManager.cs ........... 게임 전체 상태 관리 (가장 중요!)
+  • UIManager.cs ............. UI 화면 전환 관리
+
+🟡 화면별 파일 (각 화면 담당):
+  • AppClickScreen.cs ........ 📱 앱 클릭 화면
+  • LoginScreen.cs ........... 🔐 로그인 화면 (통계 표시)
+  • AlgorithmScreen.cs ....... 🎨 테마 선택 화면
+  • ReelsScreen.cs ........... 📺 릴스 화면 (게시물 표시) ← 가장 복잡
+  • MiniGameScreen.cs ........ 🎮 미니게임 화면
+  • EndingScreen.cs .......... 💀 엔딩 화면 (배터리 1% 시)
+
+================================================================================
+【 2. 각 파일별 핵심 함수 】
+================================================================================
+
+【 GameManager.cs 】
+━━━━━━━━━━━━━━━━
+게임 전체 흐름을 제어합니다.
+
+주요 함수:
+  ✓ ChangeState(GameState newState)
+    → 게임 상태를 변경하고 해당 화면을 표시
+    → 예시: ChangeState(GameState.Reels) → 릴스 화면으로
+
+  ✓ OnAppClicked()
+    → 앱 아이콘 클릭 시 호출
+    → 결과: 로그인 화면으로 전환
+
+  ✓ OnLoginComplete()
+    → 로그인 버튼 클릭 시 호출
+    → 결과: 테마 선택 화면으로 전환
+
+  ✓ OnThemeSelected()
+    → 테마 선택 시 호출
+    → 결과: 배터리 100%로 초기화, 릴스 화면으로 전환
+
+  ✓ OnMiniGameStart()
+    → 미니게임 게시물 클릭 시 호출
+    → 결과: 미니게임 화면으로 전환
+
+  ✓ OnMiniGameComplete()
+    → 미니게임 완료 시 호출
+    → 결과: 배터리 -10%, 배터리가 1% 이하면 엔딩
+
+  ✓ OnBatteryDepleted()
+    → 배터리가 1% 이하일 때 호출
+    → 결과: 엔딩 화면으로 전환
+
+  ✓ IncreaseSavedCount()
+    → 일반 게시물 클릭 시 호출
+    → 결과: 저장한 수 +1
+
+  ✓ IncreaseHeartCount()
+    → 미니게임 완료 시 호출
+    → 결과: 하트 수 +1
+
+  ✓ AddPlayTime(float seconds)
+    → 게임 중에 호출
+    → 결과: 사용 시간 증가
+
+【 ReelsScreen.cs 】
+━━━━━━━━━━━━━━━
+SNS 피드를 관리합니다 (가장 중요한 화면).
+
+주요 함수:
+  ✓ GeneratePosts()
+    → 게시물 6~8개를 동적으로 생성
+    → 30% 확률로 미니게임 게시물 포함
+    → 호출 시점: Initialize(), 새로고침 버튼 클릭
+
+  ✓ DisplayPost(PostData post)
+    → 게시물을 UI로 만들어 화면에 표시
+    → GeneratePosts()에서 각 게시물마다 호출
+
+  ✓ OnPostClicked(PostData post)
+    → 게시물 클릭 시 호출
+    → 일반 게시물 → IncreaseSavedCount()
+    → 미니게임 게시물 → OnMiniGameStart()
+
+  ✓ UpdateBattery()
+    → 배터리 상태를 실시간으로 표시
+    → 50% 이상: 초록색, 20~50%: 노란색, 20% 이하: 빨간색
+    → 호출 시점: Initialize(), Update()
+
+================================================================================
+【 3. 게임 흐름 트레이싱 (클릭했을 때 어떤 함수가 실행되는가?)】
+================================================================================
+
+【 앱 아이콘 클릭 】
+┌─ AppClickScreen.OnAppButtonClicked()
+│  └─ GameManager.OnAppClicked()
+│     └─ GameManager.ChangeState(GameState.Login)
+│        └─ UIManager.ShowScreen(GameState.Login)
+│           └─ LoginScreen 표시
+└─ LoginScreen에서 통계 표시 시작
+
+【 로그인 버튼 클릭 】
+┌─ LoginScreen.OnLoginButtonClicked()
+│  └─ GameManager.OnLoginComplete()
+│     └─ GameManager.ChangeState(GameState.Algorithm)
+│        └─ UIManager.ShowScreen(GameState.Algorithm)
+│           └─ AlgorithmScreen 표시
+└─ 테마 버튼들이 활성화
+
+【 테마 버튼 클릭 】
+┌─ AlgorithmScreen.OnThemeButtonClicked()
+│  └─ GameManager.OnThemeSelected()
+│     ├─ 배터리 = 100% (초기화)
+│     └─ GameManager.ChangeState(GameState.Reels)
+│        └─ UIManager.ShowScreen(GameState.Reels)
+│           └─ ReelsScreen 표시
+│              ├─ 게시물 6~8개 생성
+│              └─ 배터리 100% 표시
+└─ 플레이 시작!
+
+【 일반 게시물 클릭 】
+┌─ ReelsScreen.OnPostClicked(post) [post.isMiniGame = false]
+│  └─ GameManager.IncreaseSavedCount()
+│     └─ savedCount += 1
+└─ 게시물 제거 또는 반응 (선택사항)
+
+【 미니게임 게시물 클릭 】
+┌─ ReelsScreen.OnPostClicked(post) [post.isMiniGame = true]
+│  └─ GameManager.OnMiniGameStart()
+│     └─ GameManager.ChangeState(GameState.MiniGame)
+│        └─ UIManager.ShowScreen(GameState.MiniGame)
+│           └─ MiniGameScreen 표시 (5가지 중 랜덤 선택)
+└─ 미니게임 플레이 시작
+
+【 미니게임 완료 버튼 클릭 】
+┌─ MiniGameScreen.OnCompleteButtonClicked()
+│  ├─ GameManager.AddPlayTime(5)
+│  │  └─ totalPlayTime += 5초
+│  ├─ GameManager.IncreaseHeartCount()
+│  │  └─ heartCount += 1
+│  └─ GameManager.OnMiniGameComplete()
+│     ├─ battery -= 10%
+│     └─ if (battery <= 1%)
+│        ├─ GameManager.OnBatteryDepleted()
+│        │  └─ GameManager.ChangeState(GameState.Ending)
+│        │     └─ EndingScreen 표시
+│        └─ else
+│           └─ GameManager.ChangeState(GameState.Reels)
+│              └─ ReelsScreen 표시
+└─ 다시 릴스로 돌아감 또는 엔딩
+
+【 새로고침 버튼 클릭 】
+┌─ ReelsScreen.OnRefreshButtonClicked()
+│  └─ ReelsScreen.GeneratePosts()
+│     ├─ 기존 게시물 제거
+│     ├─ 새 게시물 6~8개 생성
+│     └─ DisplayPost() 호출 (각 게시물마다)
+└─ 새로운 게시물 목록 표시
+
+【 재시작 버튼 클릭 】
+┌─ EndingScreen.OnRestartButtonClicked()
+│  └─ SceneManager.LoadScene("MainGame")
+│     └─ 씬 전체 재로드
+└─ 게임 처음부터 다시 시작
+
+================================================================================
+【 4. 배터리 로직 】
+================================================================================
+
+배터리는 다음 위치에서 관리됩니다:
+
+【 선언 (GameManager.cs)】
+━━━━━━━━━━━━━━━
+  private float battery = 100f;  // 초기값 100%
+
+【 초기화 (GameManager.cs → OnThemeSelected)】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  battery = 100f;  // 테마 선택 시 배터리 리셋
+
+【 감소 (GameManager.cs → OnMiniGameComplete)】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+  battery -= 10f;  // 미니게임 완료 시 10% 감소
+  battery = Mathf.Max(0f, battery);  // 음수 방지
+
+【 확인 (GameManager.cs → OnMiniGameComplete)】
+━━━━━━━━━━━━━━━━━━
+  if (battery <= 1f)
+  {
+    OnBatteryDepleted();  // 엔딩 화면으로
+  }
+
+【 표시 (ReelsScreen.cs → UpdateBattery)】
+━━━━━━━━━━━━━━━━━━━━
+  float battery = GameManager.Instance.Battery;
+  batteryText.text = $"🔋 {battery:F1}%";
+  // 색상도 함께 변경
+
+================================================================================
+【 5. 배터리 감소 흐름 (시간 순서대로)】
+================================================================================
+
+1단계: 릴스 화면
+  배터리: 100%
+  상태: 게시물 스크롤 중
+
+2단계: 미니게임 게시물 클릭
+  배터리: 100% (변화 없음)
+  상태: 미니게임 화면으로 전환
+
+3단계: 미니게임 완료 클릭
+  배터리: 100% → 90%로 감소
+  상태: 릴스 화면으로 복귀
+
+4단계: 릴스 화면 (2차)
+  배터리: 90%
+  상태: 게시물 스크롤 계속
+
+5단계: 미니게임 게시물 클릭 (2차)
+  배터리: 90% (변화 없음)
+  상태: 미니게임 화면으로 전환
+
+6단계: 미니게임 완료 클릭 (2차)
+  배터리: 90% → 80%로 감소
+  상태: 릴스 화면으로 복귀
+
+...반복...
+
+최종: 배터리 <= 1%
+  상태: 엔딩 화면으로 전환
+  결과: 게임 종료
+
+【 배터리 감소 예시】
+┌─ 1차 미니게임: 100% → 90%
+├─ 2차 미니게임: 90% → 80%
+├─ 3차 미니게임: 80% → 70%
+├─ 4차 미니게임: 70% → 60%
+├─ 5차 미니게임: 60% → 50%
+├─ 6차 미니게임: 50% → 40%
+├─ 7차 미니게임: 40% → 30%
+├─ 8차 미니게임: 30% → 20%
+├─ 9차 미니게임: 20% → 10%
+├─ 10차 미니게임: 10% → 0%
+└─ 11차 미니게임 시도: 0% → -10% (최소: 1%) → 엔딩!
+
+================================================================================
+【 6. 추가 기능을 만들 때 수정할 위치 】
+================================================================================
+
+【 새로운 미니게임 추가 】
+━━━━━━━━━━━━━━━━━━━
+
+MiniGameScreen.cs에서:
+  string[] miniGames = new string[] { ... };
+  여기에 새로운 미니게임 이름 추가
+
+  SelectRandomMiniGame() 함수에서 위 배열 참조
+
+【 배터리 감소량 변경 】
+━━━━━━━━━━━━━━━━
+
+GameManager.cs의 OnMiniGameComplete():
+  battery -= 10f;  ← 이 값 변경
+  예: battery -= 5f;  // 5%씩 감소
+
+【 미니게임 확률 변경 】
+━━━━━━━━━━━━━━
+
+ReelsScreen.cs에서:
+  private float miniGameProbability = 0.3f;  // 30% 확률 ← 이 값 변경
+  예: miniGameProbability = 0.5f;  // 50% 확률
+
+【 게시물 개수 변경 】
+━━━━━━━━━━━━
+
+ReelsScreen.cs의 GeneratePosts():
+  int postCount = Random.Range(6, 9);  // 6~8개 ← 이 값 변경
+  예: int postCount = Random.Range(8, 11);  // 8~10개
+
+【 배터리 색상 변경 】
+━━━━━━━━━━━━━
+
+ReelsScreen.cs의 UpdateBattery():
+  if (battery > 50f) { ... 초록색 ... }
+  여기서 색상 값 변경 가능
+
+【 엔딩 메시지 변경 】
+━━━━━━━━━━━━
+
+EndingScreen.cs의 Initialize():
+  messageText.text = "...";
+  여기서 메시지 수정
+
+================================================================================
+【 예제: 새로운 미니게임 "좋아요 연타" 구현 】
+================================================================================
+
+1. MiniGameScreen.cs에 추가:
+   string[] miniGames = { "좋아요 연타", "타이밍 맞추기", ... };
+
+2. 새 파일 생성: LikeButtonGame.cs
+   public class LikeButtonGame : MonoBehaviour
+   {
+       [SerializeField] private Button likeButton;
+       private int clickCount = 0;
+
+       public void Initialize()
+       {
+           clickCount = 0;
+           likeButton.onClick.RemoveAllListeners();
+           likeButton.onClick.AddListener(OnLikeClicked);
+       }
+
+       private void OnLikeClicked()
+       {
+           clickCount++;
+           Debug.Log($"❤️ 클릭: {clickCount}회");
+       }
+
+       public bool IsComplete()
+       {
+           return clickCount >= 20;  // 20회 이상이면 완료
+       }
+   }
+
+3. MiniGameScreen에 연결:
+   - LikeButtonGame.cs 추가
+   - Initialize() 에서 게임 선택 시 호출
+
+================================================================================
+【 체크리스트: 게임 동작 확인 】
+================================================================================
+
+[ ] 앱 아이콘 클릭 → 로그인 화면 표시
+[ ] 로그인 버튼 클릭 → 테마 선택 화면 표시
+[ ] 테마 클릭 → 릴스 화면 표시 (배터리 100%)
+[ ] 게시물이 6~8개 생성됨
+[ ] 일반 게시물 클릭 → "저장한 수" 증가 (로그인 화면에서 확인)
+[ ] 미니게임 게시물 클릭 → 미니게임 화면 표시
+[ ] 미니게임 완료 → 배터리 10% 감소
+[ ] 배터리가 1% 이하 → 엔딩 화면 표시
+[ ] 엔딩 화면에서 최종 통계 표시
+[ ] 재시작 버튼 → 게임 처음부터 시작
+
+================================================================================
+

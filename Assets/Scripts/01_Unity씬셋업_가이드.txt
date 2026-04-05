@@ -1,0 +1,291 @@
+﻿================================================================================
+【 Unity 씬(Scene) 셋업 가이드 】
+================================================================================
+
+이 가이드를 따라 Unity에서 게임을 실제로 작동시킬 수 있습니다.
+
+================================================================================
+【 Step 1: 기본 씬 구조 설정 】
+================================================================================
+
+1. Unity Editor 열기
+2. 새 씬 만들기 (File → New Scene)
+3. 씬 이름을 "MainGame"으로 저장
+
+씬 계층 구조 (Hierarchy):
+┌─ Canvas (Root UI)
+│  ├─ AppClickScreen Panel
+│  ├─ LoginScreen Panel
+│  ├─ AlgorithmScreen Panel
+│  ├─ ReelsScreen Panel
+│  ├─ MiniGameScreen Panel
+│  └─ EndingScreen Panel
+│
+└─ GameManager (GameObject)
+
+================================================================================
+【 Step 2: Canvas 생성 】
+================================================================================
+
+1. Hierarchy에서 우클릭
+2. UI → Panel - TextMeshPro 선택
+   → Canvas가 자동으로 생성됨
+   → Panel이 Canvas 하위에 생성됨
+
+Canvas 설정:
+  • Canvas Scaler
+    - UI Scale Mode: "Scale With Screen Size"
+    - Reference Resolution: (1080, 1920) - 모바일 해상도
+
+Panel 제거하고 다시 시작:
+  1. Canvas 선택
+  2. Hierarchy에서 삭제 (Canvas만 남기기)
+
+================================================================================
+【 Step 3: 각 화면 UI 만들기 】
+================================================================================
+
+【 3-1. AppClickScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "AppClickScreen"
+2. AppClickScreen Panel 선택
+   • Layout Element 추가
+     - Preferred Width: 1080
+     - Preferred Height: 1920
+3. Image 컴포넌트 추가
+   • Color: 회색 (200, 200, 200)
+4. AppClickScreen 내부에 하위 요소 추가:
+   ├─ Title (Text)
+   │  • Text: "1%\nSNS 중독 시뮬레이터"
+   │  • Font Size: 60
+   │  • Alignment: Center Middle
+   │
+   └─ AppButton (Button - TextMeshPro)
+      • Normal Color: 흰색
+      • Pressed Color: 검은색
+      • 자식 Text: "📱 앱 실행"
+      • Font Size: 50
+
+5. AppClickScreen 게임오브젝트에 AppClickScreen.cs 컴포넌트 추가
+   • Inspector → Add Component → AppClickScreen 검색 추가
+
+6. 인스펙터에서:
+   • App Button: (AppButton 할당)
+   • Title Text: (Title 게임오브젝트의 Text 할당)
+
+【 3-2. LoginScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "LoginScreen"
+2. LoginScreen에 하위 요소들 추가:
+
+Layout:
+┌─ StatsPanel (Panel)
+│  ├─ SavedCountText (Text)
+│  ├─ HeartCountText (Text)
+│  └─ PlayTimeText (Text)
+│
+├─ ProfilePanel (Panel)
+│  └─ ProfileImage (Image)
+│
+└─ LoginButton (Button)
+
+3. 각 Text 설정:
+   • SavedCountText 초기값: "📌 저장한 수\n0"
+   • HeartCountText 초기값: "❤️ 하트\n0"
+   • PlayTimeText 초기값: "⏱️ 사용 시간\n0분 0초"
+
+4. ProfileImage 설정:
+   • Color: 회색 (200, 200, 200)
+
+5. LoginButton 설정:
+   • 자식 Text: "🔓 로그인"
+   • Font Size: 45
+
+6. LoginScreen 게임오브젝트에 LoginScreen.cs 추가
+
+【 3-3. AlgorithmScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "AlgorithmScreen"
+2. AlgorithmScreen에 하위 요소들 추가:
+
+Layout:
+├─ Title (Text)
+│  • Text: "어떤 테마로 시작할까요?"
+│
+└─ ThemesPanel (Panel)
+   ├─ ThemeButton_1 (Button) - "📱 일상"
+   ├─ ThemeButton_2 (Button) - "🎮 게임"
+   ├─ ThemeButton_3 (Button) - "🎬 엔터테인먼트"
+   └─ ThemeButton_4 (Button) - "📚 교육"
+
+3. AlgorithmScreen 게임오브젝트에 AlgorithmScreen.cs 추가
+4. 인스펙터에서 Theme Buttons 배열 할당
+
+【 3-4. ReelsScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "ReelsScreen"
+2. ReelsScreen에 하위 요소들 추가:
+
+Layout:
+├─ TopBar (Panel)
+│  ├─ BatteryText (Text)
+│  ├─ BatteryIcon (Image)
+│  └─ RefreshButton (Button)
+│
+├─ ScrollView (Scroll Rect)
+│  └─ Viewport (Mask)
+│     └─ Content (Panel)
+│        └─ [게시물들이 동적으로 생성됨]
+│
+└─ BottomBar (Panel)
+
+3. ScrollView 설정:
+   • Scroll Rect 컴포넌트
+     - Vertical: ON
+     - Horizontal: OFF
+   • Mask 컴포넌트 추가
+
+4. BatteryText 초기값:
+   • Text: "🔋 100%"
+   • Font Size: 40
+
+5. RefreshButton:
+   • 자식 Text: "🔄 새로고침"
+
+6. ReelsScreen 게임오브젝트에 ReelsScreen.cs 추가
+
+【 3-5. MiniGameScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "MiniGameScreen"
+2. MiniGameScreen에 하위 요소들 추가:
+
+Layout:
+├─ Title (Text)
+│  • Text: "⭐ 미니게임"
+│
+├─ Instruction (Text)
+│  • Text: "미니게임을 플레이해보세요!"
+│
+├─ GameArea (Panel)
+│  • [실제 미니게임 UI가 들어갈 공간]
+│
+├─ CompleteButton (Button)
+│  • 자식 Text: "✅ 완료"
+│
+└─ SkipButton (Button)
+   • 자식 Text: "⏭️ 스킵"
+
+3. MiniGameScreen 게임오브젝트에 MiniGameScreen.cs 추가
+
+【 3-6. EndingScreen 생성 】
+━━━━━━━━━━━━━━━━━━━━━
+
+1. Canvas 하위에 Panel 생성 → 이름: "EndingScreen"
+2. EndingScreen에 하위 요소들 추가:
+
+Layout:
+├─ BlackScreen (Image)
+│  • Color: 검은색 (0, 0, 0)
+│
+├─ Silhouette (Image)
+│  • Color: 어두운 회색 (75, 75, 75)
+│  • Alpha: 0.8
+│
+├─ Message (Text)
+│  • Text: "배터리가 모두 소모되었습니다...\n\n당신은 얼마나 많은 시간과 집중력을\nSNS에 소비했을까요?"
+│  • Font Size: 40
+│
+├─ Statistics (Text)
+│  • Text: "[통계가 표시됨]"
+│  • Font Size: 35
+│
+└─ RestartButton (Button)
+   • 자식 Text: "🔄 재시작"
+
+3. EndingScreen 게음오브젝트에 EndingScreen.cs 추가
+
+================================================================================
+【 Step 4: GameManager 설정 】
+================================================================================
+
+1. Hierarchy에서 빈 GameObject 생성
+2. 이름: "GameManager"
+3. GameManager 게임오브젝트 선택
+4. Inspector → Add Component → GameManager 검색 추가
+5. GameManager에 다음을 할당:
+   • UIManager를 찾도록 설정 (자동 감지)
+
+================================================================================
+【 Step 5: UIManager 설정 】
+================================================================================
+
+1. GameManager 또는 Canvas에 UIManager.cs 추가
+   (권장: Canvas 하위에 배치)
+
+2. UIManager 인스펙터에서:
+   • App Click Screen: (AppClickScreen Panel 할당)
+   • Login Screen: (LoginScreen Panel 할당)
+   • Algorithm Screen: (AlgorithmScreen Panel 할당)
+   • Reels Screen: (ReelsScreen Panel 할당)
+   • Mini Game Screen: (MiniGameScreen Panel 할당)
+   • Ending Screen: (EndingScreen Panel 할당)
+
+================================================================================
+【 Step 6: 테스트 】
+================================================================================
+
+1. Play 버튼 클릭
+2. 다음 순서로 동작하는지 확인:
+
+✓ 앱 아이콘 클릭 → 로그인 화면으로 전환
+✓ 로그인 버튼 클릭 → 테마 선택 화면으로 전환
+✓ 테마 선택 → 릴스 화면으로 전환 (게시물 표시, 배터리 100%)
+✓ 게시물 클릭 → 반응 (저장 또는 미니게임)
+✓ 미니게임 완료 → 배터리 10% 감소, 릴스로 복귀
+✓ 배터리 반복 감소 → 1% 도달 시 엔딩 화면
+
+================================================================================
+【 자주 하는 실수 해결법 】
+================================================================================
+
+❌ 문제: "UIManager를 찾을 수 없습니다" 에러
+✓ 해결: UIManager가 Canvas나 다른 오브젝트에 컴포넌트로 추가되어야 함
+
+❌ 문제: 버튼 클릭이 안 됨
+✓ 해결: Canvas에 GraphicRaycaster가 있는지 확인
+✓ 해결: Button이 Interactable이 ON인지 확인
+
+❌ 문제: 화면 전환이 안 됨
+✓ 해결: UIManager의 각 Screen 참조가 올바르게 할당되었는지 확인
+
+❌ 문제: 텍스트가 보이지 않음
+✓ 해결: Text의 Color가 검은색인지 확인 (배경이 흰색이면 흰색은 안 보임)
+✓ 해결: TextMeshPro를 사용 중인 경우, TextMeshProUGUI 사용 확인
+
+================================================================================
+【 추가 팁 】
+================================================================================
+
+1. 프리팹 만들기 (나중에 게시물 프리팹 필요할 때):
+   - Inspector에서 게시물 Panel을 Project 폴더로 드래그
+   - 프리팹 생성됨
+
+2. 씬 저장:
+   - Ctrl+S (또는 File → Save Scene)
+   - 파일명: MainGame.unity
+
+3. 레이아웃 리셋 (UI가 이상할 때):
+   - RectTransform → Right Click → Copy Component
+   - 필요한 곳에 Paste Component As New
+
+4. 모바일 테스트:
+   - Game 뷰에서 해상도 설정 (1080x1920)
+   - 스마트폰처럼 테스트 가능
+
+================================================================================
+

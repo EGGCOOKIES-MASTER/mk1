@@ -1,193 +1,368 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
-/// <summary>
-/// 게임 메인 관리자 (싱글톤)
-/// 모든 화면 매니저를 통합 관리하고, 게임 상태를 제어
-/// 각 매니저는 자신의 화면만 담당하고, GameManager가 전체 흐름을 조율
-/// </summary>
+/// ============================================================
+/// 【 GameManager - SNS 중독 게임 전체 관리 시스템 】
+/// 
+/// 역할:
+/// - 게임의 핵심 상태 관리 (6가지 상태를 enum으로 제어)
+/// - 배터리 시스템 (100% → 0% 감소 및 종료 조건)
+/// - 플레이어 통계 추적 (저장한 수, 하트, 사용 시간)
+/// - 모든 화면과의 통신 (UIManager를 통해 화면 전환)
+/// 
+/// 특징:
+/// - 싱글톤 패턴: 게임 전체에서 오직 하나만 존재
+/// - DontDestroyOnLoad: 씬 전환 후에도 유지됨
+/// - 상태 기반 설계: 현재 상태만 알면 무엇을 해야 할지 명확
+/// 
+/// 사용 예:
+/// GameManager.Instance.ChangeState(GameState.Login);
+/// GameManager.Instance.OnMiniGameComplete();
+/// ============================================================
+
 public class GameManager : MonoBehaviour
 {
-    // ================================ 싱글톤 ================================
-    public static GameManager Instance;
+    /// ===== 【 싱글톤 인스턴스 】 =====
+    /// 게임 전체 어디서든 접근 가능한 GameManager 인스턴스
+    /// 중요: GameManager.Instance로 접근해서 사용
+    public static GameManager Instance { get; private set; }
 
-    // ================================ 게임 상태 ================================
-    public enum GameState { AppScreen, Login, Algorithm, Reels, MiniGame, Ending }
-    private GameState currentState;
-
-    // ================================ 화면 매니저들 ================================
-    private AppScreenManager appScreenManager;
-    private LoginManager loginManager;
-    private AlgorithmManager algorithmManager;
-    private ReelsManager reelsManager;
-    private MiniGameScreenManager miniGameManager;
-    private EndingManager endingManager;
-
-    // ================================ 배터리 시스템 ================================
-    private float batteryLevel = 100f;
-    private const float BATTERY_DRAIN_RATE = 2f;
-    private const float BATTERY_CHECK_INTERVAL = 0.1f;
-    private float batteryCheckTimer = 0f;
-
-    // ================================ 플레이어 데이터 ================================
-    private int savedCount = 45;
-    private int heartsPressed = 128;
-    private int usedMinutes = 247;
-
-    // ================================ 현재 상태 ================================
-    private string currentTheme = "";
-
-    // ================================ 상수 ================================
-    private const int MINI_GAME_TIME_ADD = 5;
-
-    // ================================ 싱글톤 초기화 ================================
-    private void Awake()
+    /// ===== 【 게임 상태 정의 】 =====
+    /// 게임은 이 6가지 상태 중 정확히 하나의 상태만 가짐
+    public enum GameState
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        AppClick,      // 📱 앱 클릭 화면 - 게임 시작 (진입점)
+        Login,         // 🔐 로그인 화면 - 통계 표시 후 로그인
+        Algorithm,     // 🎨 알고리즘 화면 - 테마 4가지 중 선택
+        Reels,         // 📺 릴스 화면 - 메인 플레이 공간, 게시물 스크롤
+        MiniGame,      // 🎮 미니게임 - 게시물 클릭 시 진입
+        Ending         // 💀 엔딩 화면 - 배터리 1% 도달 시 게임 종료
+    }
+
+    /// ===== 【 게임 상태 변수 】 =====
+    /// currentState: 현재 게임이 어느 상태에 있는지 저장
+    /// 항상 위의 6가지 상태 중 하나의 값을 가짐
+    private GameState currentState;
+    public GameState CurrentState => currentState;  // 읽기 전용 프로퍼티
+
+    /// ===== 【 배터리 시스템 변수 】 =====
+    /// battery: 게임의 진행 시간을 제한하는 자원
+    /// 특징:
+    /// - 초기값: 100% (테마 선택 후)
+    /// - 감소: 미니게임 완료 시 -10%
+    /// - 종료 조건: 1% 이하 도달 시 엔딩
+    /// 게임 설계: 배터리 소진 = SNS 사용으로 인한 시간/에너지 낭비 표현
+    private float battery = 100f;
+    public float Battery => battery;  // 읽기 전용, ReelsScreen에서 배터리 UI 업데이트에 사용
+
+    /// ===== 【 게임 통계 변수 】 =====
+    /// savedCount: 일반 게시물을 클릭한 횟수 (저장한 수)
+    /// heartCount: 미니게임을 완료한 횟수 (하트 수)
+    /// totalPlayTime: 미니게임으로 소비한 총 시간 (초 단위)
+    /// 
+    /// 이 통계들은:
+    /// - LoginScreen에서 처음에 표시됨
+    /// - 플레이 중 계속 누적됨
+    /// - EndingScreen에서 최종 통계로 표시됨
+    private int savedCount = 0;             // 저장한 수 (일반 게시물 클릭)
+    private int heartCount = 0;             // 하트 수 (미니게임 완료)
+    private float totalPlayTime = 0f;       // 총 사용 시간 (초)
+
+    // 통계는 읽기 전용 프로퍼티로 제공
+    public int SavedCount => savedCount;
+    public int HeartCount => heartCount;
+    public float TotalPlayTime => totalPlayTime;
+
+    /// ===== 【 UI 관리자 참조 】 =====
+    /// uiManager: 모든 화면 전환을 담당하는 UIManager
+    /// Start()에서 자동으로 찾아지고, ChangeState()에서 사용됨
+    private UIManager uiManager;
+
+    // ============================================================
+    /// 【 Awake() - 게임 시작 시 가장 먼저 호출 】
+    /// 역할: 싱글톤 패턴 초기화
+    /// 특징: Awake()는 Start()보다 먼저 실행됨
+    // ============================================================
+    void Awake()
+    {
+        /// 싱글톤 체크: GameManager가 이미 존재하는지 확인
+        /// 만약 이미 존재한다면 새로 생성된 GameManager는 삭제
+        /// 이렇게 해서 게임 전체에서 오직 하나의 GameManager만 존재
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-    }
-
-    private void Start()
-    {
-        // 매니저 초기화
-        InitializeManagers();
         
-        // 게임 시작
-        ShowAppScreen();
+        // GameManager를 전역 인스턴스로 설정
+        Instance = this;
+        
+        // 씬 전환 후에도 GameManager를 파괴하지 않음
+        // → 게임 전체에서 게속 게임 상태를 추적할 수 있음
+        DontDestroyOnLoad(gameObject);
     }
 
-    private void Update()
+    // ============================================================
+    /// 【 Start() - 게임 초기화 】
+    /// 역할: UIManager 찾기, 게임 시작 상태 설정
+    // ============================================================
+    void Start()
     {
-        // 릴스 화면에서 배터리 감소
-        if (currentState == GameState.Reels)
+        /// UIManager 찾기
+        /// FindObjectOfType<T>()는 씬에서 T 타입의 컴포넌트를 찾음
+        /// (성능상 주의: 많이 쓰면 느려질 수 있음)
+        uiManager = FindObjectOfType<UIManager>();
+        if (uiManager == null)
         {
-            batteryCheckTimer += Time.deltaTime;
-            if (batteryCheckTimer >= BATTERY_CHECK_INTERVAL)
-            {
-                batteryCheckTimer = 0f;
-                // 배터리 UI 업데이트 (실제 감소는 미니게임 완료 시)
-                reelsManager.UpdateBattery(batteryLevel);
-            }
+            Debug.LogError("❌ UIManager를 찾을 수 없습니다! UIManager 컴포넌트가 씬에 있는지 확인하세요.");
         }
+
+        /// 게임 시작
+        /// 첫 번째 상태를 AppClick으로 설정
+        /// → AppClickScreen 화면 표시
+        ChangeState(GameState.AppClick);
     }
 
-    // ================================ 매니저 초기화 ================================
-    /// <summary>모든 화면 매니저 초기화</summary>
-    private void InitializeManagers()
+    // ============================================================
+    /// 【 ChangeState() - 게임 상태 변경의 핵심 함수 】
+    /// 역할: 게임 상태를 변경하고 해당 화면을 표시
+    /// 
+    /// 매개변수:
+    /// - newState: 변경할 새로운 상태 (GameState enum 값)
+    /// 
+    /// 동작:
+    /// 1. currentState를 newState로 업데이트
+    /// 2. 콘솔에 상태 변경 로그 출력
+    /// 3. UIManager에 새 화면 표시 요청
+    /// 
+    /// 예시:
+    /// ChangeState(GameState.Login);    // AppClick → Login
+    /// ChangeState(GameState.Reels);    // Algorithm → Reels
+    /// ============================================================
+    public void ChangeState(GameState newState)
     {
-        // 캔버스 생성
-        GameObject canvasGO = new GameObject("Canvas");
-        Canvas canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasGO.AddComponent<CanvasScaler>();
-        canvasGO.AddComponent<GraphicRaycaster>();
+        // 현재 상태 업데이트
+        currentState = newState;
+        Debug.Log($"🔄 게임 상태 변경: {newState}");
 
-        // 각 매니저 생성
-        appScreenManager = gameObject.AddComponent<AppScreenManager>();
-        loginManager = gameObject.AddComponent<LoginManager>();
-        algorithmManager = gameObject.AddComponent<AlgorithmManager>();
-        reelsManager = gameObject.AddComponent<ReelsManager>();
-        miniGameManager = gameObject.AddComponent<MiniGameScreenManager>();
-        endingManager = gameObject.AddComponent<EndingManager>();
-    }
-
-    // ================================ 화면 전환 메서드 ================================
-
-    /// <summary>앱 화면 표시</summary>
-    private void ShowAppScreen()
-    {
-        currentState = GameState.AppScreen;
-        appScreenManager.Show(() => ShowLoginScreen());
-    }
-
-    /// <summary>로그인 화면 표시</summary>
-    private void ShowLoginScreen()
-    {
-        currentState = GameState.Login;
-        appScreenManager.Hide();
-        loginManager.Show(savedCount, heartsPressed, usedMinutes, () => ShowAlgorithmScreen());
-    }
-
-    /// <summary>알고리즘(테마 선택) 화면 표시</summary>
-    private void ShowAlgorithmScreen()
-    {
-        currentState = GameState.Algorithm;
-        loginManager.Hide();
-        algorithmManager.Show((theme) => OnThemeSelected(theme));
-    }
-
-    /// <summary>테마 선택 완료 처리</summary>
-    private void OnThemeSelected(string theme)
-    {
-        currentTheme = theme;
-        ShowReelsScreen();
-    }
-
-    /// <summary>릴스 화면 표시</summary>
-    private void ShowReelsScreen()
-    {
-        currentState = GameState.Reels;
-        algorithmManager.Hide();
-        reelsManager.Show(currentTheme, batteryLevel, 
-            () => ShowAlgorithmScreen(), // 돌아가기
-            () => ShowMiniGameScreen()); // 미니게임 클릭
-    }
-
-    /// <summary>미니게임 화면 표시</summary>
-    private void ShowMiniGameScreen()
-    {
-        currentState = GameState.MiniGame;
-        reelsManager.Hide();
-        miniGameManager.Show(() => OnMiniGameComplete());
-    }
-
-    /// <summary>미니게임 완료 처리</summary>
-    private void OnMiniGameComplete()
-    {
-        // 배터리 소모
-        batteryLevel -= BATTERY_DRAIN_RATE;
-        usedMinutes += MINI_GAME_TIME_ADD;
-
-        // 배터리 체크
-        if (batteryLevel <= 1)
+        // UIManager가 존재하는지 확인 후 새 화면 표시
+        // (null 체크로 오류 방지)
+        if (uiManager != null)
         {
-            ShowEndingScreen();
+            uiManager.ShowScreen(newState);
         }
         else
         {
-            miniGameManager.Hide();
-            ShowReelsScreen(); // 다시 릴스 화면으로
+            Debug.LogWarning("⚠️ UIManager가 없어서 화면을 표시할 수 없습니다.");
         }
     }
 
-    /// <summary>엔딩 화면 표시</summary>
-    private void ShowEndingScreen()
+    // ============================================================
+    /// 【 OnAppClicked() - 앱 아이콘 클릭 이벤트 】
+    /// 
+    /// 호출 시점: AppClickScreen의 앱 버튼을 클릭했을 때
+    /// 
+    /// 동작:
+    /// - AppClick 상태 → Login 상태로 변경
+    /// - LoginScreen 화면 표시
+    /// - 현재까지의 게임 통계 표시 (처음이면 모두 0)
+    /// 
+    /// 용도: 게임 시작 → 로그인 화면 진입
+    /// ============================================================
+    public void OnAppClicked()
     {
-        currentState = GameState.Ending;
-        miniGameManager.Hide();
-        endingManager.Show();
+        Debug.Log("📱 앱 클릭됨!");
+        ChangeState(GameState.Login);
     }
 
-    // ================================ 공용 메서드 ================================
-
-    /// <summary>현재 게임 상태 반환</summary>
-    public GameState GetCurrentState() => currentState;
-
-    /// <summary>배터리 레벨 반환</summary>
-    public float GetBatteryLevel() => batteryLevel;
-
-    /// <summary>플레이어 통계 업데이트</summary>
-    public void UpdateStats(int saved, int hearts, int minutes)
+    // ============================================================
+    /// 【 OnLoginComplete() - 로그인 완료 이벤트 】
+    /// 
+    /// 호출 시점: LoginScreen의 로그인 버튼을 클릭했을 때
+    /// 
+    /// 동작:
+    /// - Login 상태 → Algorithm 상태로 변경
+    /// - AlgorithmScreen(테마 선택 화면) 표시
+    /// - 4가지 테마 버튼 활성화
+    /// 
+    /// 용도: 로그인 → 테마 선택
+    /// ============================================================
+    public void OnLoginComplete()
     {
-        savedCount = saved;
-        heartsPressed = hearts;
-        usedMinutes = minutes;
+        Debug.Log("🔐 로그인 완료!");
+        ChangeState(GameState.Algorithm);
+    }
+
+    // ============================================================
+    /// 【 OnThemeSelected() - 테마 선택 완료 이벤트 】
+    /// 
+    /// 호출 시점: AlgorithmScreen에서 4가지 테마 중 하나를 선택했을 때
+    /// 
+    /// 동작:
+    /// 1. Algorithm 상태 → Reels 상태로 변경
+    /// 2. ReelsScreen(메인 플레이 화면) 표시
+    /// 3. 배터리를 100%로 초기화 ★ 중요
+    /// 4. 게시물 6~8개 동적 생성 시작
+    /// 
+    /// 용도: 테마 선택 → 게임 본격 시작
+    /// 
+    /// 주의: 배터리를 반드시 초기화해야 새 게임이 시작됨
+    /// ============================================================
+    public void OnThemeSelected()
+    {
+        Debug.Log("🎨 테마 선택됨!");
+        
+        // 게임 본편 시작 - Reels 상태로 변경
+        ChangeState(GameState.Reels);
+        
+        // ★ 배터리 초기화: 이 작업이 없으면 이전 게임의 배터리가 유지됨
+        battery = 100f;
+        Debug.Log($"⚡ 배터리 초기화: {battery}%");
+    }
+
+    // ============================================================
+    /// 【 OnMiniGameStart() - 미니게임 시작 이벤트 】
+    /// 
+    /// 호출 시점: ReelsScreen에서 미니게임 게시물을 클릭했을 때
+    /// (30% 확률로 미니게임 게시물이 나타남)
+    /// 
+    /// 동작:
+    /// - Reels 상태 → MiniGame 상태로 변경
+    /// - MiniGameScreen 화면 표시
+    /// - 5가지 게임 중 랜덤 선택 (게임 시작)
+    /// 
+    /// 용도: 게시물 클릭 → 미니게임 진입
+    /// ============================================================
+    public void OnMiniGameStart()
+    {
+        Debug.Log("🎮 미니게임 시작!");
+        ChangeState(GameState.MiniGame);
+    }
+
+    // ============================================================
+    /// 【 OnMiniGameComplete() - 미니게임 완료 이벤트 ★ 배터리 감소 핵심 】
+    /// 
+    /// 호출 시점: MiniGameScreen에서 "완료" 또는 "스킵" 버튼을 클릭했을 때
+    /// 
+    /// 동작 순서:
+    /// 1. 배터리 -10% 감소
+    /// 2. 배터리가 0 이하로 내려가지 않도록 제한 (Mathf.Max)
+    /// 3. 게임 통계 업데이트 (하트+1, 시간+5초는 MiniGameScreen에서)
+    /// 4. 배터리 상태 확인:
+    ///    - 배터리 > 1% → Reels로 돌아감 (게임 계속)
+    ///    - 배터리 ≤ 1% → OnBatteryDepleted() 호출 (게임 종료)
+    /// 
+    /// 용도: 미니게임 완료 → 배터리 감소 → 게임 계속/종료 판단
+    /// 
+    /// 중요: 이 함수가 SNS 중독 메커니즘의 핵심
+    /// - 미니게임 = 반복적인 SNS 이용
+    /// - 배터리 감소 = 시간/에너지 소모
+    /// - 배터리 고갈 = 게임 종료 (SNS 중독의 한계)
+    /// ============================================================
+    public void OnMiniGameComplete()
+    {
+        Debug.Log("✅ 미니게임 완료!");
+        
+        /// 배터리 감소 (미니게임 1회 = -10%)
+        /// 미니게임을 10번 하면 배터리가 완전히 소진됨
+        battery -= 10f;
+        
+        /// 배터리가 0 이하로 내려가지 않도록 제한
+        /// Mathf.Max(a, b)는 a와 b 중 더 큰 값을 반환
+        /// → battery가 음수가 되지 않음
+        battery = Mathf.Max(0f, battery);
+        
+        Debug.Log($"🔋 현재 배터리: {battery}%");
+
+        /// 배터리 확인: 게임 계속 vs 게임 종료
+        if (battery <= 1f)
+        {
+            /// 배터리가 거의 없음 - 게임 종료
+            OnBatteryDepleted();
+        }
+        else
+        {
+            /// 배터리가 아직 남음 - 게임 계속
+            /// Reels 상태로 돌아가서 게시물 계속 스크롤
+            ChangeState(GameState.Reels);
+        }
+    }
+
+    // ============================================================
+    /// 【 OnBatteryDepleted() - 배터리 완전 소진 이벤트 (게임 종료) 】
+    /// 
+    /// 호출 시점: 배터리가 1% 이하 도달했을 때
+    ///           (OnMiniGameComplete()에서 자동으로 호출됨)
+    /// 
+    /// 동작:
+    /// - MiniGame 상태 → Ending 상태로 변경
+    /// - EndingScreen 화면 표시
+    /// - 최종 통계 표시 (저장한 수, 하트, 사용 시간)
+    /// - 엔딩 메시지 표시: "배터리가 모두 소모되었습니다"
+    /// 
+    /// 용도: 게임 종료 → 엔딩 화면
+    /// ============================================================
+    public void OnBatteryDepleted()
+    {
+        Debug.Log("💀 배터리 소진 - 게임 종료!");
+        ChangeState(GameState.Ending);
+    }
+
+    // ============================================================
+    /// 【 IncreaseSavedCount() - 저장한 수 증가 】
+    /// 
+    /// 호출 시점: ReelsScreen에서 일반 게시물을 클릭했을 때
+    /// 
+    /// 동작:
+    /// - savedCount 변수 +1
+    /// - 다음 로그인 화면/엔딩 화면에서 업데이트된 숫자 표시
+    /// 
+    /// 용도: 일반 게시물 클릭 → 통계 증가
+    /// ============================================================
+    public void IncreaseSavedCount()
+    {
+        savedCount++;
+        Debug.Log($"📌 저장한 수 증가! (현재: {savedCount}개)");
+    }
+
+    // ============================================================
+    /// 【 IncreaseHeartCount() - 하트 수 증가 】
+    /// 
+    /// 호출 시점: MiniGameScreen에서 미니게임을 완료했을 때
+    ///           (MiniGameScreen.OnCompleteButtonClicked()에서 호출)
+    /// 
+    /// 동작:
+    /// - heartCount 변수 +1
+    /// - SNS에서 "좋아요" 누른 개수 표현
+    /// 
+    /// 용도: 미니게임 완료 → 하트 증가
+    /// ============================================================
+    public void IncreaseHeartCount()
+    {
+        heartCount++;
+        Debug.Log($"❤️ 하트 증가! (현재: {heartCount}개)");
+    }
+
+    // ============================================================
+    /// 【 AddPlayTime() - 게임 플레이 시간 누적 】
+    /// 
+    /// 호출 시점: MiniGameScreen에서 미니게임을 완료했을 때
+    ///           (MiniGameScreen.OnCompleteButtonClicked()에서 호출)
+    /// 
+    /// 매개변수:
+    /// - seconds: 추가할 시간 (초 단위)
+    ///          보통 5초씩 증가 (AddPlayTime(5f))
+    /// 
+    /// 동작:
+    /// - totalPlayTime에 seconds 더하기
+    /// - 누적된 게임 시간 추적
+    /// 
+    /// 용도: 미니게임 완료 → 사용 시간 증가
+    /// ============================================================
+    public void AddPlayTime(float seconds)
+    {
+        totalPlayTime += seconds;
+        Debug.Log($"⏱️ 사용 시간 증가! (현재: {(int)(totalPlayTime / 60)}분 {(int)(totalPlayTime % 60)}초)");
     }
 }
 
