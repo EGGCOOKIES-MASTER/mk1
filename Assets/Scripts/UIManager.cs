@@ -46,6 +46,11 @@ public class UIManager : MonoBehaviour
         /// → GameManager.ChangeState()가 호출될 때까지 아무 화면도 보이지 않음
         /// → 그 후 첫 번째 상태(AppClick)에 따라 AppClickScreen이 활성화됨
         InitializeAllScreens();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RefreshCurrentState();
+        }
     }
 
     // ============================================================

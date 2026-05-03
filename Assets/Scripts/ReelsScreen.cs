@@ -45,9 +45,40 @@ public class ReelsScreen : MonoBehaviour
             refreshButton.onClick.AddListener(OnRefreshButtonClicked);
         }
 
-        GeneratePosts();
+        // [TEMP] refreshButton이 비어 있으면 하위 버튼 하나를 찾아 다음 화면 테스트에 사용
+        if (refreshButton == null)
+        {
+            Button fallbackButton = GetComponentInChildren<Button>();
+            if (fallbackButton != null)
+            {
+                fallbackButton.onClick.RemoveAllListeners();
+                fallbackButton.onClick.AddListener(() =>
+                {
+                    if (GameManager.Instance != null)
+                    {
+                        GameManager.Instance.GoNextForDemo();
+                    }
+                });
+                Debug.Log("[TEMP] ReelsScreen fallback 버튼에 GoNextForDemo 연결 완료");
+            }
+        }
+
+        // GeneratePosts();
+        // UpdateBattery();
+
+        // [TEMP] 참조가 비어 있어도 화면 전환 테스트가 끊기지 않도록 안전 호출
+        if (content != null)
+        {
+            GeneratePosts();
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ content가 비어 있어 게시물 생성을 건너뜁니다.");
+        }
+
         UpdateBattery();
     }
+
 
     // ============================================================
     /// 【 GeneratePosts() - 게시물 생성 】
@@ -166,6 +197,8 @@ public class ReelsScreen : MonoBehaviour
     // ============================================================
     public void UpdateBattery()
     {
+        if (GameManager.Instance == null) return;
+
         float battery = GameManager.Instance.Battery;
 
         if (batteryText != null)
@@ -196,7 +229,15 @@ public class ReelsScreen : MonoBehaviour
     private void OnRefreshButtonClicked()
     {
         Debug.Log("🔄 새로고침!");
-        GeneratePosts();
+        if (content != null)
+        {
+            GeneratePosts();
+        }
+        else if (GameManager.Instance != null)
+        {
+            // [TEMP] 화면 데이터가 없을 때는 새로고침 버튼을 다음 화면 이동 버튼처럼 사용
+            GameManager.Instance.GoNextForDemo();
+        }
     }
 
     // ============================================================
@@ -204,6 +245,7 @@ public class ReelsScreen : MonoBehaviour
     // ============================================================
     void Update()
     {
+        if (GameManager.Instance == null) return;
         UpdateBattery();
     }
 

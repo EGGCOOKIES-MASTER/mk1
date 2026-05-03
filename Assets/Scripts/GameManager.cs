@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
         /// UIManager 찾기
         /// FindObjectOfType<T>()는 씬에서 T 타입의 컴포넌트를 찾음
         /// (성능상 주의: 많이 쓰면 느려질 수 있음)
-        uiManager = FindObjectOfType<UIManager>();
+        uiManager = FindFirstObjectByType<UIManager>();
         if (uiManager == null)
         {
             Debug.LogError("❌ UIManager를 찾을 수 없습니다! UIManager 컴포넌트가 씬에 있는지 확인하세요.");
@@ -154,6 +154,77 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("⚠️ UIManager가 없어서 화면을 표시할 수 없습니다.");
+        }
+    }
+
+    // ============================================================
+    /// 【 RefreshCurrentState() - 현재 상태를 다시 화면에 적용 】
+    /// 
+    /// 용도:
+    /// - 씬이 다시 로드된 뒤 새 UIManager에 현재 상태를 다시 보여줄 때 사용
+    /// ============================================================
+    public void RefreshCurrentState()
+    {
+        uiManager = FindFirstObjectByType<UIManager>();
+
+        if (uiManager != null)
+        {
+            uiManager.ShowScreen(currentState);
+        }
+    }
+
+    // ============================================================
+    /// 【 SetStateWithoutUI() - UI 갱신 없이 상태만 변경 】
+    /// 
+    /// 용도:
+    /// - 씬 전환 직전에 상태만 바꾸고 싶을 때 사용
+    /// - 새 씬에서 UIManager가 다시 잡히도록 할 때 유용
+    /// ============================================================
+    public void SetStateWithoutUI(GameState newState)
+    {
+        currentState = newState;
+        Debug.Log($"🔄 상태만 변경: {newState}");
+    }
+
+    // ============================================================
+    /// 【 GoNextForDemo() - [TEMP] 버튼 1개로 다음 화면 이동 】
+    ///
+    /// 용도:
+    /// - Inspector 참조가 덜 연결된 상태에서도 화면 전환만 빠르게 테스트
+    /// - 기존 로직은 유지하고, 임시 우회 경로만 추가
+    // ============================================================
+    public void GoNextForDemo()
+    {
+        Debug.Log($"[TEMP] 다음 화면 이동 요청 - 현재 상태: {currentState}");
+
+        switch (currentState)
+        {
+            case GameState.AppClick:
+                ChangeState(GameState.Login);
+                break;
+
+            case GameState.Login:
+                ChangeState(GameState.Algorithm);
+                break;
+
+            case GameState.Algorithm:
+                // OnThemeSelected()의 핵심 효과를 임시로 직접 적용
+                battery = 100f;
+                ChangeState(GameState.Reels);
+                break;
+
+            case GameState.Reels:
+                ChangeState(GameState.MiniGame);
+                break;
+
+            case GameState.MiniGame:
+                // 기존 완료 로직(배터리 감소/엔딩 판정) 재사용
+                OnMiniGameComplete();
+                break;
+
+            case GameState.Ending:
+                ChangeState(GameState.AppClick);
+                break;
         }
     }
 
@@ -236,7 +307,8 @@ public class GameManager : MonoBehaviour
     public void OnMiniGameStart()
     {
         Debug.Log("🎮 미니게임 시작!");
-        ChangeState(GameState.MiniGame);
+        SetStateWithoutUI(GameState.MiniGame);
+        SceneManager.LoadScene("MiniGame");
     }
 
     // ============================================================
@@ -249,7 +321,7 @@ public class GameManager : MonoBehaviour
     /// 2. 배터리가 0 이하로 내려가지 않도록 제한 (Mathf.Max)
     /// 3. 게임 통계 업데이트 (하트+1, 시간+5초는 MiniGameScreen에서)
     /// 4. 배터리 상태 확인:
-    ///    - 배터리 > 1% → Reels로 돌아감 (게임 계속)
+    ///    - 배터리 > 1% → Algorithm으로 돌아감 (다시 테마/이미지 선택)
     ///    - 배터리 ≤ 1% → OnBatteryDepleted() 호출 (게임 종료)
     /// 
     /// 용도: 미니게임 완료 → 배터리 감소 → 게임 계속/종료 판단
@@ -282,9 +354,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            /// 배터리가 아직 남음 - 게임 계속
-            /// Reels 상태로 돌아가서 게시물 계속 스크롤
-            ChangeState(GameState.Reels);
+            /// 배터리가 아직 남음 - 알고리즘 화면으로 복귀
+            ChangeState(GameState.Algorithm);
         }
     }
 

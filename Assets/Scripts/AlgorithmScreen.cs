@@ -39,6 +39,19 @@ public class AlgorithmScreen : MonoBehaviour
     [SerializeField] private Button[] themeButtons;      // 테마 버튼들 (배열 4개)
     [SerializeField] private Text titleText;             // 화면 제목
 
+    // ===== [TEMP] 하단 3버튼 미리보기 이미지 전환 =====
+    [SerializeField] private Image previewImage;
+    [SerializeField] private Button previewButton;
+    [SerializeField] private Button bottomLeftButton;
+    [SerializeField] private Button bottomCenterButton;
+    [SerializeField] private Button bottomRightButton;
+    [SerializeField] private Sprite leftPreviewSprite;    // KakaoTalk_20260426_221316735_04
+    [SerializeField] private Sprite centerPreviewSprite;  // 비우면 초기 previewImage 사용
+    [SerializeField] private Sprite rightPreviewSprite;   // KakaoTalk_20260426_221316735_01
+    [SerializeField] private GameObject reelsEnterButtonObject; // 중앙 릴스 진입 버튼(없으면 themeButtons[0] 사용)
+
+    private Sprite cachedCenterPreviewSprite;
+
     /// ===== 【 테마 이름 정의 】 =====
     /// themeNames: 각 버튼에 표시될 테마 이름
     /// themeButtons와 순서가 일치해야 함
@@ -64,6 +77,13 @@ public class AlgorithmScreen : MonoBehaviour
     public void Initialize()
     {
         Debug.Log("🎨 알고리즘 화면 (테마 선택) 초기화됨");
+
+        // [TEMP] 하단 3버튼 이미지 전환 리스너 설정
+        SetupBottomPreviewButtons();
+        SetupPreviewButton();
+
+        // 초기 진입 시에는 릴스 탭 상태(중앙)를 기본으로 적용
+        SetReelsEnterButtonVisible(true);
 
         /// 화면 제목 설정
         if (titleText != null)
@@ -111,6 +131,112 @@ public class AlgorithmScreen : MonoBehaviour
         {
             Debug.LogError("❌ themeButtons 배열이 비어있거나 할당되지 않았습니다!");
         }
+    }
+
+    private void SetupBottomPreviewButtons()
+    {
+        if (previewImage != null)
+        {
+            cachedCenterPreviewSprite = centerPreviewSprite != null ? centerPreviewSprite : previewImage.sprite;
+        }
+
+        if (bottomLeftButton != null)
+        {
+            bottomLeftButton.onClick.RemoveAllListeners();
+            bottomLeftButton.onClick.AddListener(OnBottomLeftButtonClicked);
+        }
+
+        if (bottomCenterButton != null)
+        {
+            bottomCenterButton.onClick.RemoveAllListeners();
+            bottomCenterButton.onClick.AddListener(OnBottomCenterButtonClicked);
+        }
+
+        if (bottomRightButton != null)
+        {
+            bottomRightButton.onClick.RemoveAllListeners();
+            bottomRightButton.onClick.AddListener(OnBottomRightButtonClicked);
+        }
+    }
+
+    private void SetupPreviewButton()
+    {
+        Button targetButton = previewButton;
+
+        if (targetButton == null && previewImage != null)
+        {
+            targetButton = previewImage.GetComponent<Button>();
+        }
+
+        if (targetButton != null)
+        {
+            targetButton.onClick.RemoveAllListeners();
+            targetButton.onClick.AddListener(OnPreviewImageClicked);
+            previewButton = targetButton;
+        }
+        else if (previewImage != null)
+        {
+            Debug.LogWarning("⚠️ previewImage에 Button 컴포넌트가 없어 클릭할 수 없습니다. previewButton을 연결하거나 previewImage에 Button을 추가하세요!");
+        }
+    }
+
+    public void OnPreviewImageClicked()
+    {
+        Debug.Log("🖼️ 알고리즘 화면 이미지 클릭 - 미니게임으로 이동");
+        GameManager.Instance.OnMiniGameStart();
+    }
+
+    public void OnBottomLeftButtonClicked()
+    {
+        ApplyPreviewSprite(leftPreviewSprite, "LEFT");
+        SetReelsEnterButtonVisible(false);
+    }
+
+    public void OnBottomCenterButtonClicked()
+    {
+        ApplyPreviewSprite(cachedCenterPreviewSprite, "CENTER");
+        SetReelsEnterButtonVisible(true);
+    }
+
+    public void OnBottomRightButtonClicked()
+    {
+        ApplyPreviewSprite(rightPreviewSprite, "RIGHT");
+        SetReelsEnterButtonVisible(false);
+    }
+
+    private void SetReelsEnterButtonVisible(bool isVisible)
+    {
+        GameObject targetObject = reelsEnterButtonObject;
+
+        // Inspector 연결을 안 했을 때 기존 구조(themeButtons[0])로 자동 폴백
+        if (targetObject == null && themeButtons != null && themeButtons.Length > 0 && themeButtons[0] != null)
+        {
+            targetObject = themeButtons[0].gameObject;
+        }
+
+        if (targetObject != null)
+        {
+            targetObject.SetActive(isVisible);
+        }
+    }
+
+    private void ApplyPreviewSprite(Sprite targetSprite, string source)
+    {
+        if (previewImage == null)
+        {
+            Debug.LogWarning("⚠️ previewImage가 할당되지 않았습니다!");
+            return;
+        }
+
+        if (targetSprite == null)
+        {
+            Debug.LogWarning($"⚠️ {source} 버튼용 Sprite가 비어 있습니다!");
+            return;
+        }
+
+        previewImage.sprite = targetSprite;
+        // 레이아웃이 깨지지 않도록 크기 재설정은 하지 않고 스프라이트만 교체
+        Debug.Log($"🖼️ {source} 버튼 클릭 - 미리보기 이미지 변경 완료");
     }
 
     // ============================================================
