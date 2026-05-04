@@ -283,12 +283,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("🎨 테마 선택됨!");
         
-        // 게임 본편 시작 - Reels 상태로 변경
-        ChangeState(GameState.Reels);
-        
         // ★ 배터리 초기화: 이 작업이 없으면 이전 게임의 배터리가 유지됨
         battery = 100f;
         Debug.Log($"⚡ 배터리 초기화: {battery}%");
+
+        // 게임 본편 시작 - Reels 상태로 변경
+        ChangeState(GameState.Reels);
     }
 
     // ============================================================
