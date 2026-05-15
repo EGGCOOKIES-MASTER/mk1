@@ -61,10 +61,6 @@ public class AppClickScreen : MonoBehaviour
         {
             titleText.text = "1%\nSNS 중독 시뮬레이터";  // 제목 + 부제
         }
-        else
-        {
-            Debug.LogWarning("⚠️ titleText가 할당되지 않았습니다!");
-        }
 
         /// 앱 버튼에 클릭 이벤트 등록
         if (appButton != null)
@@ -117,4 +113,3 @@ public class AppClickScreen : MonoBehaviour
         GameManager.Instance.OnAppClicked();
     }
 }
-

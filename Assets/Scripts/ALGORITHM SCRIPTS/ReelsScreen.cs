@@ -22,13 +22,14 @@ public class ReelsScreen : MonoBehaviour
     [SerializeField] private Image batteryIcon;
     [SerializeField] private Button refreshButton;
     [SerializeField] private GameObject postPrefab;
+    [SerializeField] private Sprite[] reelSprites;
 
     // ===== 게시물 데이터 =====
     private List<PostData> _posts = new List<PostData>();
     private float _miniGameProbability = 0.3f;
 
     private const int GridColumnCount = 3;
-    private const int GridPostCount = 9;
+    private const int GridPostCount = 3;
     private GridLayoutGroup _cachedGridLayout;
 
     private const float GridCellWidth = 360f;
@@ -38,6 +39,8 @@ public class ReelsScreen : MonoBehaviour
 
     private float _runtimeCellWidth;
     private float _runtimeCellHeight;
+
+    private readonly List<Image> _activeReelImages = new List<Image>();
 
     // ============================================================
     /// 【 Initialize() - 화면 초기화 】
@@ -54,8 +57,9 @@ public class ReelsScreen : MonoBehaviour
         }
 
         scrollRect.content = content;
+        // 한 화면에 좌/중/우 3개를 고정 노출하므로 스크롤은 잠근다.
         scrollRect.horizontal = false;
-        scrollRect.vertical = true;
+        scrollRect.vertical = false;
 
         RectTransform contentRect = content;
         contentRect.anchorMin = new Vector2(0f, 1f);
@@ -187,17 +191,19 @@ public class ReelsScreen : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        _activeReelImages.Clear();
         _posts.Clear();
 
         // 인스타 3x3 느낌을 위해 9개 생성
         int postCount = GridPostCount;
+        int refreshSeed = Random.Range(1000, 999999);
         for (int i = 0; i < postCount; i++)
         {
             bool isMiniGame = Random.value < _miniGameProbability;
 
             PostData newPost = new PostData
             {
-                id = i,
+                id = refreshSeed + i,
                 isMiniGame = isMiniGame,
                 title = isMiniGame ? "⭐ 특별 미니게임!" : GenerateRandomTitle(),
                 description = isMiniGame ? "탭해서 미니게임을 해보세요!" : GenerateRandomDescription()
@@ -233,11 +239,13 @@ public class ReelsScreen : MonoBehaviour
             {
                 backgroundImage = postGo.AddComponent<Image>();
             }
+        }
 
+        if (backgroundImage != null)
+        {
             backgroundImage.raycastTarget = true;
-            backgroundImage.color = post.isMiniGame
-                ? new Color(1f, 0.82f, 0.2f, 1f)
-                : GenerateTileColor(post);
+            ApplyRandomVisual(backgroundImage, post);
+            _activeReelImages.Add(backgroundImage);
         }
 
         Button postButton = postGo.GetComponent<Button>();
@@ -264,7 +272,34 @@ public class ReelsScreen : MonoBehaviour
         }
         postHandler.SetPostData(post);
 
-        BindOrCreateTexts(postGo.transform, post);
+        HideAllTexts(postGo.transform);
+    }
+
+    private void ApplyRandomVisual(Image image, PostData post)
+    {
+        if (reelSprites != null && reelSprites.Length > 0)
+        {
+            int spriteIndex = Random.Range(0, reelSprites.Length);
+            image.sprite = reelSprites[spriteIndex];
+            image.color = Color.white;
+            image.preserveAspect = true;
+            return;
+        }
+
+        // 스프라이트를 아직 연결하지 않은 경우 색상으로만 구분
+        image.sprite = null;
+        image.color = post.isMiniGame
+            ? new Color(1f, 0.82f, 0.2f, 1f)
+            : GenerateTileColor(post);
+    }
+
+    private void HideAllTexts(Transform root)
+    {
+        Text[] texts = root.GetComponentsInChildren<Text>(true);
+        for (int i = 0; i < texts.Length; i++)
+        {
+            texts[i].gameObject.SetActive(false);
+        }
     }
 
     private GameObject CreateFallbackPostObject(PostData post)
@@ -418,7 +453,18 @@ public class ReelsScreen : MonoBehaviour
         Debug.Log("🔄 새로고침!");
         if (content != null)
         {
-            GeneratePosts();
+            if (_activeReelImages.Count == GridPostCount)
+            {
+                for (int i = 0; i < _activeReelImages.Count; i++)
+                {
+                    if (_activeReelImages[i] == null) continue;
+                    ApplyRandomVisual(_activeReelImages[i], _posts[i]);
+                }
+            }
+            else
+            {
+                GeneratePosts();
+            }
         }
         else if (GameManager.Instance != null)
         {

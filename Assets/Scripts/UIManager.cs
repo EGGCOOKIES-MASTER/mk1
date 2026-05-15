@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 /// ============================================================
 /// 【 UIManager - UI 화면 전환 시스템 】
@@ -25,14 +24,12 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    /// ===== 【 6개 화면 참조 】 =====
+    /// ===== 【 화면 참조 】 =====
     /// [SerializeField]로 선언해서 Inspector에서 할당 가능
     /// 각 화면은 패널 또는 Canvas의 하위 게임오브젝트
     [SerializeField] private AppClickScreen appClickScreen;      // 📱 앱 클릭
     [SerializeField] private LoginScreen loginScreen;            // 🔐 로그인
     [SerializeField] private AlgorithmScreen algorithmScreen;    // 🎨 테마선택
-    [SerializeField] private ReelsScreen reelsScreen;            // 📺 릴스
-    [SerializeField] private MiniGameScreen miniGameScreen;      // 🎮 미니게임
     [SerializeField] private EndingScreen endingScreen;          // 💀 엔딩
 
     // ============================================================
@@ -72,13 +69,11 @@ public class UIManager : MonoBehaviour
     // ============================================================
     private void InitializeAllScreens()
     {
-        /// 6개 화면 모두 null 체크 후 비활성화
+        /// 화면 모두 null 체크 후 비활성화
         /// 만약 어떤 화면의 참조가 없으면 null이므로 if에서 걸러짐
         if (appClickScreen != null) appClickScreen.gameObject.SetActive(false);
         if (loginScreen != null) loginScreen.gameObject.SetActive(false);
         if (algorithmScreen != null) algorithmScreen.gameObject.SetActive(false);
-        if (reelsScreen != null) reelsScreen.gameObject.SetActive(false);
-        if (miniGameScreen != null) miniGameScreen.gameObject.SetActive(false);
         if (endingScreen != null) endingScreen.gameObject.SetActive(false);
     }
 
@@ -114,7 +109,7 @@ public class UIManager : MonoBehaviour
         InitializeAllScreens();
 
         /// Step 2: 상태에 따라 해당 화면만 활성화
-        /// switch문을 사용해서 6가지 상태를 모두 처리
+        /// switch문을 사용해서 상태를 처리
         switch (state)
         {
             /// 📱 AppClick 상태: 앱 아이콘 클릭 화면
@@ -142,27 +137,10 @@ public class UIManager : MonoBehaviour
                 if (algorithmScreen != null)
                 {
                     algorithmScreen.gameObject.SetActive(true);  // 화면 표시
-                    algorithmScreen.Initialize();                 // 테마 버튼 활성화
-                }
-                break;
-
-            /// 📺 Reels 상태: 메인 플레이 화면 (SNS 피드)
-            /// 게시물 스크롤, 배터리 표시, 게시물 클릭 반응
-            case GameManager.GameState.Reels:
-                if (reelsScreen != null)
-                {
-                    reelsScreen.gameObject.SetActive(true);     // 화면 표시
-                    reelsScreen.Initialize();                    // 게시물 생성
-                }
-                break;
-
-            /// 🎮 MiniGame 상태: 미니게임 화면
-            /// 5가지 게임 중 랜덤 선택
-            case GameManager.GameState.MiniGame:
-                if (miniGameScreen != null)
-                {
-                    miniGameScreen.gameObject.SetActive(true);  // 화면 표시
-                    miniGameScreen.Initialize();                 // 게임 초기화
+                    if (algorithmScreen.isActiveAndEnabled)
+                    {
+                        algorithmScreen.Initialize();             // 테마 버튼 활성화
+                    }
                 }
                 break;
 
@@ -183,4 +161,3 @@ public class UIManager : MonoBehaviour
         }
     }
 }
-

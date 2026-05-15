@@ -68,5 +68,24 @@ public class FeedManager : MonoBehaviour {
     public List<PostData> GetFirstPage(int pageSize) {
         return GetNextPage(pageSize, pageIndex: 0);
     }
+
+    /// <summary>
+    /// 화면에 동시에 보여줄 릴스용 랜덤 포스트 목록 반환
+    /// </summary>
+    public List<PostData> GetRandomPosts(int count) {
+        var result = new List<PostData>();
+        if (count <= 0 || allPosts == null || allPosts.Count == 0) return result;
+
+        int targetCount = Mathf.Min(count, allPosts.Count);
+        var usedIndices = new HashSet<int>();
+
+        while (result.Count < targetCount) {
+            int randomIndex = UnityEngine.Random.Range(0, allPosts.Count);
+            if (!usedIndices.Add(randomIndex)) continue;
+            result.Add(allPosts[randomIndex]);
+        }
+
+        return result;
+    }
 }
 

@@ -71,10 +71,6 @@ public class LoginScreen : MonoBehaviour
         {
             savedCountText.text = $"📌 저장한 수\n{gm.SavedCount}";
         }
-        else
-        {
-            Debug.LogWarning("⚠️ savedCountText가 할당되지 않았습니다!");
-        }
 
         /// 2️⃣ 하트 수 표시
         /// - 정의: 미니게임을 완료한 횟수
@@ -82,10 +78,6 @@ public class LoginScreen : MonoBehaviour
         if (heartCountText != null)
         {
             heartCountText.text = $"❤️ 하트\n{gm.HeartCount}";
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ heartCountText가 할당되지 않았습니다!");
         }
 
         /// 3️⃣ 사용 시간 표시
@@ -98,10 +90,6 @@ public class LoginScreen : MonoBehaviour
             int minutes = (int)(gm.TotalPlayTime / 60f);      // 분 계산
             int seconds = (int)(gm.TotalPlayTime % 60f);      // 초 계산 (나머지)
             playTimeText.text = $"⏱️ 사용 시간\n{minutes}분 {seconds}초";
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ playTimeText가 할당되지 않았습니다!");
         }
 
         /// 4️⃣ 프로필 이미지
@@ -155,4 +143,3 @@ public class LoginScreen : MonoBehaviour
         GameManager.Instance.OnLoginComplete();
     }
 }
-

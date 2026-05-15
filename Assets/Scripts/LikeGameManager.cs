@@ -91,6 +91,7 @@ public class LikeGameManager : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
+            GameManager.Instance.EndReelsSessionAndDrain("manual_exit");
             GameManager.Instance.SetStateWithoutUI(GameManager.GameState.Algorithm);
         }
 

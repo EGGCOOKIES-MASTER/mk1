@@ -34,8 +34,6 @@ public class GameManager : MonoBehaviour
         AppClick,      // 📱 앱 클릭 화면 - 게임 시작 (진입점)
         Login,         // 🔐 로그인 화면 - 통계 표시 후 로그인
         Algorithm,     // 🎨 알고리즘 화면 - 테마 4가지 중 선택
-        Reels,         // 📺 릴스 화면 - 메인 플레이 공간, 게시물 스크롤
-        MiniGame,      // 🎮 미니게임 - 게시물 클릭 시 진입
         Ending         // 💀 엔딩 화면 - 배터리 1% 도달 시 게임 종료
     }
 
@@ -54,6 +52,14 @@ public class GameManager : MonoBehaviour
     /// 게임 설계: 배터리 소진 = SNS 사용으로 인한 시간/에너지 낭비 표현
     private float battery = 100f;
     public float Battery => battery;  // 읽기 전용, ReelsScreen에서 배터리 UI 업데이트에 사용
+    public float MentalEnergy => battery; // 의미상 별칭: 배터리 = 정신력
+
+    [Header("Mental Energy Settings")]
+    [SerializeField] private float baseMentalDrainPerSession = 8f;
+    [SerializeField] private float mentalDrainPerSecond = 0.35f;
+
+    private bool isReelsSessionActive;
+    private float reelsSessionStartTime;
 
     /// ===== 【 게임 통계 변수 】 =====
     /// savedCount: 일반 게시물을 클릭한 횟수 (저장한 수)
@@ -137,7 +143,7 @@ public class GameManager : MonoBehaviour
     /// 
     /// 예시:
     /// ChangeState(GameState.Login);    // AppClick → Login
-    /// ChangeState(GameState.Reels);    // Algorithm → Reels
+    /// ChangeState(GameState.Algorithm); // 로그인 이후 콘텐츠 허브로 진입
     /// ============================================================
     public void ChangeState(GameState newState)
     {
@@ -208,18 +214,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.Algorithm:
-                // OnThemeSelected()의 핵심 효과를 임시로 직접 적용
-                battery = 100f;
-                ChangeState(GameState.Reels);
-                break;
-
-            case GameState.Reels:
-                ChangeState(GameState.MiniGame);
-                break;
-
-            case GameState.MiniGame:
-                // 기존 완료 로직(배터리 감소/엔딩 판정) 재사용
-                OnMiniGameComplete();
+                OnMiniGameStart();
                 break;
 
             case GameState.Ending:
@@ -287,64 +282,100 @@ public class GameManager : MonoBehaviour
         battery = 100f;
         Debug.Log($"⚡ 배터리 초기화: {battery}%");
 
-        // 게임 본편 시작 - Reels 상태로 변경
-        ChangeState(GameState.Reels);
+        // Algorithm 화면을 릴스 허브처럼 사용할 때는 현재 화면을 유지한다.
     }
 
     // ============================================================
-    /// 【 OnMiniGameStart() - 미니게임 시작 이벤트 】
+    /// 【 OnMiniGameStart() - 콘텐츠 소비 시작 이벤트 】
     /// 
-    /// 호출 시점: ReelsScreen에서 미니게임 게시물을 클릭했을 때
-    /// (30% 확률로 미니게임 게시물이 나타남)
+    /// 호출 시점: Algorithm 화면에서 릴스/콘텐츠를 클릭했을 때
     /// 
     /// 동작:
-    /// - Reels 상태 → MiniGame 상태로 변경
-    /// - MiniGameScreen 화면 표시
-    /// - 5가지 게임 중 랜덤 선택 (게임 시작)
+    /// - 콘텐츠 세션 시작
+    /// - 정신력 소모 적용
+    /// - MainScene 기준 상태 복귀(Algorithm 또는 Ending)
     /// 
-    /// 용도: 게시물 클릭 → 미니게임 진입
+    /// 용도: 콘텐츠 클릭 → 정신력 소비 처리
     /// ============================================================
     public void OnMiniGameStart()
     {
-        Debug.Log("🎮 미니게임 시작!");
-        SetStateWithoutUI(GameState.MiniGame);
-        SceneManager.LoadScene("MiniGame");
+        Debug.Log("🎬 콘텐츠 소비 시작");
+        BeginReelsSession();
+        OnMiniGameComplete();
+    }
+
+    /// <summary>
+    /// 릴스 소비 세션 시작 (진입 시점)
+    /// </summary>
+    public void BeginReelsSession()
+    {
+        isReelsSessionActive = true;
+        reelsSessionStartTime = Time.unscaledTime;
+        Debug.Log("🧠 릴스 세션 시작");
+    }
+
+    /// <summary>
+    /// 릴스 소비 세션 종료 + 정신력 감소 (이탈 시점)
+    /// </summary>
+    public void EndReelsSessionAndDrain(string reason)
+    {
+        float sessionSeconds = 0f;
+        if (isReelsSessionActive)
+        {
+            sessionSeconds = Mathf.Max(0f, Time.unscaledTime - reelsSessionStartTime);
+        }
+
+        isReelsSessionActive = false;
+
+        float drain = baseMentalDrainPerSession + (sessionSeconds * mentalDrainPerSecond);
+        ApplyMentalDrain(drain, reason, sessionSeconds);
+    }
+
+    private void ApplyMentalDrain(float amount, string reason, float sessionSeconds)
+    {
+        float previous = battery;
+        battery = Mathf.Max(0f, battery - Mathf.Max(0f, amount));
+        Debug.Log($"🧠 정신력 감소({reason}) - {previous:F1}% -> {battery:F1}% (세션 {sessionSeconds:F1}s)");
+    }
+
+    private void ReturnToMainSceneWithState(GameState state)
+    {
+        string activeSceneName = SceneManager.GetActiveScene().name;
+        if (activeSceneName == "MainScene")
+        {
+            ChangeState(state);
+            return;
+        }
+
+        SetStateWithoutUI(state);
+        SceneManager.LoadScene("MainScene");
     }
 
     // ============================================================
-    /// 【 OnMiniGameComplete() - 미니게임 완료 이벤트 ★ 배터리 감소 핵심 】
+    /// 【 OnMiniGameComplete() - 콘텐츠 소비 완료 이벤트 ★ 배터리 감소 핵심 】
     /// 
-    /// 호출 시점: MiniGameScreen에서 "완료" 또는 "스킵" 버튼을 클릭했을 때
+    /// 호출 시점: 콘텐츠 소비를 끝내고 메인 흐름으로 돌아올 때
     /// 
     /// 동작 순서:
     /// 1. 배터리 -10% 감소
     /// 2. 배터리가 0 이하로 내려가지 않도록 제한 (Mathf.Max)
-    /// 3. 게임 통계 업데이트 (하트+1, 시간+5초는 MiniGameScreen에서)
+    /// 3. 배터리 상태 확인
     /// 4. 배터리 상태 확인:
     ///    - 배터리 > 1% → Algorithm으로 돌아감 (다시 테마/이미지 선택)
     ///    - 배터리 ≤ 1% → OnBatteryDepleted() 호출 (게임 종료)
     /// 
-    /// 용도: 미니게임 완료 → 배터리 감소 → 게임 계속/종료 판단
+    /// 용도: 콘텐츠 소비 완료 → 배터리 감소 → 게임 계속/종료 판단
     /// 
     /// 중요: 이 함수가 SNS 중독 메커니즘의 핵심
-    /// - 미니게임 = 반복적인 SNS 이용
+    /// - 콘텐츠 소비 = 반복적인 SNS 이용
     /// - 배터리 감소 = 시간/에너지 소모
     /// - 배터리 고갈 = 게임 종료 (SNS 중독의 한계)
     /// ============================================================
     public void OnMiniGameComplete()
     {
-        Debug.Log("✅ 미니게임 완료!");
-        
-        /// 배터리 감소 (미니게임 1회 = -10%)
-        /// 미니게임을 10번 하면 배터리가 완전히 소진됨
-        battery -= 10f;
-        
-        /// 배터리가 0 이하로 내려가지 않도록 제한
-        /// Mathf.Max(a, b)는 a와 b 중 더 큰 값을 반환
-        /// → battery가 음수가 되지 않음
-        battery = Mathf.Max(0f, battery);
-        
-        Debug.Log($"🔋 현재 배터리: {battery}%");
+        Debug.Log("✅ 콘텐츠 소비 완료!");
+
+        EndReelsSessionAndDrain("mini_game_complete");
 
         /// 배터리 확인: 게임 계속 vs 게임 종료
         if (battery <= 1f)
@@ -355,7 +386,7 @@ public class GameManager : MonoBehaviour
         else
         {
             /// 배터리가 아직 남음 - 알고리즘 화면으로 복귀
-            ChangeState(GameState.Algorithm);
+            ReturnToMainSceneWithState(GameState.Algorithm);
         }
     }
 
@@ -363,11 +394,11 @@ public class GameManager : MonoBehaviour
     /// 【 OnBatteryDepleted() - 배터리 완전 소진 이벤트 (게임 종료) 】
     /// 
     /// 호출 시점: 배터리가 1% 이하 도달했을 때
-    ///           (OnMiniGameComplete()에서 자동으로 호출됨)
+    ///           (OnMiniGameComplete()에서 자동으로 호출)
     /// 
     /// 동작:
-    /// - MiniGame 상태 → Ending 상태로 변경
-    /// - EndingScreen 화면 표시
+    /// - Ending 상태로 변경
+    /// - EndingScreen 표시
     /// - 최종 통계 표시 (저장한 수, 하트, 사용 시간)
     /// - 엔딩 메시지 표시: "배터리가 모두 소모되었습니다"
     /// 
@@ -376,7 +407,7 @@ public class GameManager : MonoBehaviour
     public void OnBatteryDepleted()
     {
         Debug.Log("💀 배터리 소진 - 게임 종료!");
-        ChangeState(GameState.Ending);
+        ReturnToMainSceneWithState(GameState.Ending);
     }
 
     // ============================================================
@@ -399,14 +430,13 @@ public class GameManager : MonoBehaviour
     // ============================================================
     /// 【 IncreaseHeartCount() - 하트 수 증가 】
     /// 
-    /// 호출 시점: MiniGameScreen에서 미니게임을 완료했을 때
-    ///           (MiniGameScreen.OnCompleteButtonClicked()에서 호출)
+    /// 호출 시점: 콘텐츠 소비 완료 시 통계 반영이 필요할 때
     /// 
     /// 동작:
     /// - heartCount 변수 +1
     /// - SNS에서 "좋아요" 누른 개수 표현
     /// 
-    /// 용도: 미니게임 완료 → 하트 증가
+    /// 용도: 콘텐츠 소비 완료 → 하트 증가
     /// ============================================================
     public void IncreaseHeartCount()
     {
@@ -417,8 +447,7 @@ public class GameManager : MonoBehaviour
     // ============================================================
     /// 【 AddPlayTime() - 게임 플레이 시간 누적 】
     /// 
-    /// 호출 시점: MiniGameScreen에서 미니게임을 완료했을 때
-    ///           (MiniGameScreen.OnCompleteButtonClicked()에서 호출)
+    /// 호출 시점: 콘텐츠 소비 완료 시 시간 반영이 필요할 때
     /// 
     /// 매개변수:
     /// - seconds: 추가할 시간 (초 단위)
@@ -428,7 +457,7 @@ public class GameManager : MonoBehaviour
     /// - totalPlayTime에 seconds 더하기
     /// - 누적된 게임 시간 추적
     /// 
-    /// 용도: 미니게임 완료 → 사용 시간 증가
+    /// 용도: 콘텐츠 소비 완료 → 사용 시간 증가
     /// ============================================================
     public void AddPlayTime(float seconds)
     {

@@ -49,8 +49,11 @@ public class AlgorithmScreen : MonoBehaviour
     [SerializeField] private Sprite centerPreviewSprite;  // 비우면 초기 previewImage 사용
     [SerializeField] private Sprite rightPreviewSprite;   // KakaoTalk_20260426_221316735_01
     [SerializeField] private GameObject reelsEnterButtonObject; // 중앙 릴스 진입 버튼(없으면 themeButtons[0] 사용)
+    [SerializeField] private GameObject algorithmPostArea;
+    [SerializeField] private GameObject refreshButtonObject;
 
     private Sprite cachedCenterPreviewSprite;
+    private bool isReelsTabActive;
 
     /// ===== 【 테마 이름 정의 】 =====
     /// themeNames: 각 버튼에 표시될 테마 이름
@@ -78,21 +81,19 @@ public class AlgorithmScreen : MonoBehaviour
     {
         Debug.Log("🎨 알고리즘 화면 (테마 선택) 초기화됨");
 
+        ResolveTabObjects();
+
         // [TEMP] 하단 3버튼 이미지 전환 리스너 설정
         SetupBottomPreviewButtons();
         SetupPreviewButton();
 
         // 초기 진입 시에는 릴스 탭 상태(중앙)를 기본으로 적용
-        SetReelsEnterButtonVisible(true);
+        ShowReelsTab();
 
         /// 화면 제목 설정
         if (titleText != null)
         {
             titleText.text = "어떤 테마로 시작할까요?";
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ titleText가 할당되지 않았습니다!");
         }
 
         /// 테마 버튼 초기화
@@ -121,20 +122,14 @@ public class AlgorithmScreen : MonoBehaviour
                     /// → 이 버튼을 클릭하면 OnThemeButtonClicked(themeIndex) 호출
                     themeButtons[i].onClick.AddListener(() => OnThemeButtonClicked(themeIndex));
                 }
-                else
-                {
-                    Debug.LogWarning($"⚠️ themeButtons[{i}]가 할당되지 않았습니다!");
-                }
             }
-        }
-        else
-        {
-            Debug.LogError("❌ themeButtons 배열이 비어있거나 할당되지 않았습니다!");
         }
     }
 
     private void SetupBottomPreviewButtons()
     {
+        ResolveBottomButtons();
+
         if (previewImage != null)
         {
             cachedCenterPreviewSprite = centerPreviewSprite != null ? centerPreviewSprite : previewImage.sprite;
@@ -159,6 +154,35 @@ public class AlgorithmScreen : MonoBehaviour
         }
     }
 
+    private void ResolveBottomButtons()
+    {
+        if (bottomLeftButton == null)
+        {
+            bottomLeftButton = FindChildButton("HOME");
+        }
+
+        if (bottomCenterButton == null)
+        {
+            bottomCenterButton = FindChildButton("Reels");
+        }
+
+        if (bottomRightButton == null)
+        {
+            bottomRightButton = FindChildButton("Profile");
+        }
+    }
+
+    private Button FindChildButton(string childName)
+    {
+        Transform child = transform.Find(childName);
+        if (child == null)
+        {
+            return null;
+        }
+
+        return child.GetComponent<Button>();
+    }
+
     private void SetupPreviewButton()
     {
         Button targetButton = previewButton;
@@ -174,10 +198,6 @@ public class AlgorithmScreen : MonoBehaviour
             targetButton.onClick.AddListener(OnPreviewImageClicked);
             previewButton = targetButton;
         }
-        else if (previewImage != null)
-        {
-            Debug.LogWarning("⚠️ previewImage에 Button 컴포넌트가 없어 클릭할 수 없습니다. previewButton을 연결하거나 previewImage에 Button을 추가하세요!");
-        }
     }
 
     public void OnPreviewImageClicked()
@@ -188,20 +208,119 @@ public class AlgorithmScreen : MonoBehaviour
 
     public void OnBottomLeftButtonClicked()
     {
+        SetPreviewVisible(true);
         ApplyPreviewSprite(leftPreviewSprite, "LEFT");
-        SetReelsEnterButtonVisible(false);
+        HideReelsTab();
     }
 
     public void OnBottomCenterButtonClicked()
     {
-        ApplyPreviewSprite(cachedCenterPreviewSprite, "CENTER");
-        SetReelsEnterButtonVisible(true);
+        SetPreviewVisible(false);
+        ShowReelsTab();
     }
 
     public void OnBottomRightButtonClicked()
     {
+        SetPreviewVisible(true);
         ApplyPreviewSprite(rightPreviewSprite, "RIGHT");
-        SetReelsEnterButtonVisible(false);
+        HideReelsTab();
+    }
+
+    private void ResolveTabObjects()
+    {
+        if (previewImage == null)
+        {
+            Transform foundPreviewImage = transform.Find("Image");
+            if (foundPreviewImage != null)
+            {
+                previewImage = foundPreviewImage.GetComponent<Image>();
+            }
+        }
+
+        if (algorithmPostArea == null)
+        {
+            Transform foundPostArea = transform.Find("AlgorithmPostArea");
+            if (foundPostArea != null)
+            {
+                algorithmPostArea = foundPostArea.gameObject;
+            }
+        }
+
+        if (refreshButtonObject == null)
+        {
+            Transform foundRefreshButton = transform.Find("RefreshButton");
+            if (foundRefreshButton != null)
+            {
+                refreshButtonObject = foundRefreshButton.gameObject;
+            }
+        }
+    }
+
+    private void ShowReelsTab()
+    {
+        SetPreviewVisible(false);
+        SetReelsTabVisible(true);
+    }
+
+    private void HideReelsTab()
+    {
+        SetReelsTabVisible(false);
+    }
+
+    private void SetReelsTabVisible(bool isVisible)
+    {
+        isReelsTabActive = isVisible;
+
+        if (algorithmPostArea != null)
+        {
+            algorithmPostArea.SetActive(isVisible);
+        }
+
+        if (refreshButtonObject != null)
+        {
+            refreshButtonObject.SetActive(isVisible);
+        }
+
+        SetReelsEnterButtonVisible(isVisible);
+    }
+
+    private void LateUpdate()
+    {
+        if (!isReelsTabActive)
+        {
+            return;
+        }
+
+        SetPreviewVisible(false);
+    }
+
+    private void SetPreviewVisible(bool isVisible)
+    {
+        ResolvePreviewImage();
+
+        if (previewImage != null)
+        {
+            previewImage.enabled = isVisible;
+            previewImage.raycastTarget = isVisible;
+            previewImage.gameObject.SetActive(isVisible);
+        }
+    }
+
+    private void ResolvePreviewImage()
+    {
+        if (previewImage != null)
+        {
+            return;
+        }
+
+        if (previewImage == null)
+        {
+            Transform foundPreviewImage = transform.Find("Image");
+            if (foundPreviewImage != null)
+            {
+                previewImage = foundPreviewImage.GetComponent<Image>();
+            }
+        }
     }
 
     private void SetReelsEnterButtonVisible(bool isVisible)
@@ -224,13 +343,11 @@ public class AlgorithmScreen : MonoBehaviour
     {
         if (previewImage == null)
         {
-            Debug.LogWarning("⚠️ previewImage가 할당되지 않았습니다!");
             return;
         }
 
         if (targetSprite == null)
         {
-            Debug.LogWarning($"⚠️ {source} 버튼용 Sprite가 비어 있습니다!");
             return;
         }
 
@@ -285,4 +402,3 @@ public class AlgorithmScreen : MonoBehaviour
         return selectedTheme;
     }
 }
-
