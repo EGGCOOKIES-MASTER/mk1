@@ -89,6 +89,8 @@ public class LikeGameManager : MonoBehaviour
 
     public void GoHome()
     {
+        GameManager.SetPendingInitialState(GameManager.GameState.Algorithm);
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.EndReelsSessionAndDrain("manual_exit");

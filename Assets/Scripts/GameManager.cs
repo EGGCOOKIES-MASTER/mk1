@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     /// 게임 전체 어디서든 접근 가능한 GameManager 인스턴스
     /// 중요: GameManager.Instance로 접근해서 사용
     public static GameManager Instance { get; private set; }
+    private static bool hasPendingInitialState;
+    private static GameState pendingInitialState;
 
     /// ===== 【 게임 상태 정의 】 =====
     /// 게임은 이 6가지 상태 중 정확히 하나의 상태만 가짐
@@ -96,7 +98,7 @@ public class GameManager : MonoBehaviour
         /// 이렇게 해서 게임 전체에서 오직 하나의 GameManager만 존재
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
         
@@ -106,6 +108,25 @@ public class GameManager : MonoBehaviour
         // 씬 전환 후에도 GameManager를 파괴하지 않음
         // → 게임 전체에서 게속 게임 상태를 추적할 수 있음
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "MainScene")
+        {
+            return;
+        }
+
+        RefreshCurrentState();
     }
 
     // ============================================================
@@ -123,10 +144,25 @@ public class GameManager : MonoBehaviour
             Debug.LogError("❌ UIManager를 찾을 수 없습니다! UIManager 컴포넌트가 씬에 있는지 확인하세요.");
         }
 
-        /// 게임 시작
-        /// 첫 번째 상태를 AppClick으로 설정
-        /// → AppClickScreen 화면 표시
-        ChangeState(GameState.AppClick);
+        GameState startState = ConsumePendingInitialState(GameState.AppClick);
+        ChangeState(startState);
+    }
+
+    public static void SetPendingInitialState(GameState state)
+    {
+        hasPendingInitialState = true;
+        pendingInitialState = state;
+    }
+
+    private static GameState ConsumePendingInitialState(GameState fallbackState)
+    {
+        if (!hasPendingInitialState)
+        {
+            return fallbackState;
+        }
+
+        hasPendingInitialState = false;
+        return pendingInitialState;
     }
 
     // ============================================================
@@ -171,12 +207,27 @@ public class GameManager : MonoBehaviour
     /// ============================================================
     public void RefreshCurrentState()
     {
-        uiManager = FindFirstObjectByType<UIManager>();
+        uiManager = FindMainSceneUIManager();
+        currentState = ConsumePendingInitialState(currentState);
 
         if (uiManager != null)
         {
             uiManager.ShowScreen(currentState);
         }
+    }
+
+    private UIManager FindMainSceneUIManager()
+    {
+        UIManager[] managers = FindObjectsByType<UIManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            if (managers[i] != null && managers[i].gameObject.scene.name == "MainScene")
+            {
+                return managers[i];
+            }
+        }
+
+        return managers.Length > 0 ? managers[0] : null;
     }
 
     // ============================================================
@@ -347,6 +398,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        SetPendingInitialState(state);
         SetStateWithoutUI(state);
         SceneManager.LoadScene("MainScene");
     }
@@ -465,4 +517,3 @@ public class GameManager : MonoBehaviour
         Debug.Log($"⏱️ 사용 시간 증가! (현재: {(int)(totalPlayTime / 60)}분 {(int)(totalPlayTime % 60)}초)");
     }
 }
-
