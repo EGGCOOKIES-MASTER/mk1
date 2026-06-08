@@ -475,7 +475,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &189672721
 RectTransform:
   m_ObjectHideFlags: 0
@@ -603,9 +603,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2015786352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 120.85045, y: -183.94075}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 241.7009, y: 367.8815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &226499028
@@ -1852,8 +1852,47 @@ MonoBehaviour:
   - title: T1
     thumbnail: {fileID: 1651502996231628893, guid: c9a0dd0b06ccfb043917be859965738e, type: 3}
     sceneName: MiniGame
-  - title: Soldier
+  - title: "\uC608\uBE44\uAD70"
     thumbnail: {fileID: -7733208066925729262, guid: dd733a4cfa700a2458a7ada505107642, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uC0AC\uADF9"
+    thumbnail: {fileID: -855298285791758126, guid: 0b2914197d338b347b47675985f90d3b, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uB2E4\uC774\uC18C"
+    thumbnail: {fileID: -855298285791758126, guid: 8b1b54bafda960642a6d18d161cae6a8, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uAE30\uC0C1\uCE90\uC2A4\uD130"
+    thumbnail: {fileID: -855298285791758126, guid: ef789158b03b6e34abe74e27b46afbb5, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uBCF4\uC774\uC2A4\uD53C\uC2F1"
+    thumbnail: {fileID: -855298285791758126, guid: 5f83e5e3fcf6d324186e06ca51f0e7e9, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uAC15\uD615\uC6B1"
+    thumbnail: {fileID: -855298285791758126, guid: f852c2c20f0b0304c81df347ab579604, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uC885"
+    thumbnail: {fileID: -855298285791758126, guid: 8a89e099e1ba2ac40bd1083bec8cf544, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uC88B\uC544\uC694"
+    thumbnail: {fileID: -855298285791758126, guid: dc4624e3019b9684e9a49b59d3f76baa, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uB9C8\uC220"
+    thumbnail: {fileID: -855298285791758126, guid: 402921bf41ce94e4ebc611c500d95514, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uC2A4\uD3F0\uC9C0\uBC25"
+    thumbnail: {fileID: -855298285791758126, guid: f17f176a3bc2d744aad98e919e0cac6c, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uBDD4\uD398"
+    thumbnail: {fileID: -855298285791758126, guid: ade3c7ab548875049b8d7562d1a90d7d, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uACB0\uD63C"
+    thumbnail: {fileID: -855298285791758126, guid: bc113673d579a7d4db583ba3d9264b98, type: 3}
+    sceneName: Reel_Soldier
+  - title: "\uC560\uAD6D\uAC00"
+    thumbnail: {fileID: -855298285791758126, guid: a85360f271f4ed14d8b6093663ba0511, type: 3}
+    sceneName: Reel_Soldier
+  - title: chatgpt
+    thumbnail: {fileID: -855298285791758126, guid: 5066ed96d9654a54ba70b1cf690d41b3, type: 3}
     sceneName: Reel_Soldier
   preventDuplicateOnScreen: 1
 --- !u!1 &964498007
@@ -2030,7 +2069,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1135739779
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2818,9 +2857,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2015786352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 412.8026, y: -183.94075}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 241.7009, y: 367.8815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1615972925
@@ -3092,9 +3131,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2015786352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 704.75476, y: -183.94075}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 241.7009, y: 367.8815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1988169571

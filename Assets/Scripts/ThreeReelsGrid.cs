@@ -10,6 +10,8 @@ public class ThreeReelsGrid : MonoBehaviour
     {
         public string title;
         public Sprite thumbnail;
+        public Sprite[] postImages;
+        public bool isMiniGamePost;
         public string sceneName = "MiniGame";
     }
 
@@ -23,6 +25,7 @@ public class ThreeReelsGrid : MonoBehaviour
 
     [Header("Controls")]
     [SerializeField] private Button refreshButton;
+    [SerializeField] private ReelPostViewer postViewer;
 
     [Header("Reel Data")]
     [SerializeField] private ReelEntry[] reels;
@@ -158,6 +161,17 @@ public class ThreeReelsGrid : MonoBehaviour
             return;
         }
 
+        if (selectedReel.isMiniGamePost)
+        {
+            OpenMiniGameReel(selectedReel);
+            return;
+        }
+
+        OpenPostViewer(selectedReel);
+    }
+
+    private void OpenMiniGameReel(ReelEntry selectedReel)
+    {
         if (GameManager.Instance != null)
         {
             GameManager.Instance.BeginReelsSession();
@@ -169,7 +183,18 @@ public class ThreeReelsGrid : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Open reel: {selectedReel.title} -> {selectedReel.sceneName}");
+        Debug.Log($"Open mini game reel: {selectedReel.title} -> {selectedReel.sceneName}");
         SceneManager.LoadScene(selectedReel.sceneName);
+    }
+
+    private void OpenPostViewer(ReelEntry selectedReel)
+    {
+        if (postViewer == null)
+        {
+            Debug.LogWarning($"Reel '{selectedReel.title}' is not a mini game post, but no ReelPostViewer is assigned.");
+            return;
+        }
+
+        postViewer.Open(selectedReel);
     }
 }
