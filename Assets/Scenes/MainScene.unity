@@ -1181,8 +1181,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1020, y: -45}
-  m_SizeDelta: {x: 120, y: 50}
+  m_AnchoredPosition: {x: 1027.0798, y: -50.5125}
+  m_SizeDelta: {x: 91.81, y: 79.025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &419965585
 MonoBehaviour:
@@ -1241,15 +1241,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.745283, g: 0.017577427, b: 0.017577427, a: 1}
+  m_Color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 6679419658844598376, guid: b339eac686c83de42b4a0ccccb85cb8a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1257,7 +1257,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.5
 --- !u!222 &419965587
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1845,55 +1845,93 @@ MonoBehaviour:
   centerButton: {fileID: 1615972927}
   rightButton: {fileID: 1988169573}
   refreshButton: {fileID: 419965585}
+  postViewer: {fileID: 0}
   reels:
   - title: Karina
     thumbnail: {fileID: 1986015356589799072, guid: fc58bf99f194aac418d9732cae0b2618, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Karina
   - title: T1
     thumbnail: {fileID: 1651502996231628893, guid: c9a0dd0b06ccfb043917be859965738e, type: 3}
+    postImages: []
+    isMiniGamePost: 1
     sceneName: MiniGame
   - title: "\uC608\uBE44\uAD70"
     thumbnail: {fileID: -7733208066925729262, guid: dd733a4cfa700a2458a7ada505107642, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC0AC\uADF9"
     thumbnail: {fileID: -855298285791758126, guid: 0b2914197d338b347b47675985f90d3b, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uB2E4\uC774\uC18C"
     thumbnail: {fileID: -855298285791758126, guid: 8b1b54bafda960642a6d18d161cae6a8, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uAE30\uC0C1\uCE90\uC2A4\uD130"
     thumbnail: {fileID: -855298285791758126, guid: ef789158b03b6e34abe74e27b46afbb5, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uBCF4\uC774\uC2A4\uD53C\uC2F1"
     thumbnail: {fileID: -855298285791758126, guid: 5f83e5e3fcf6d324186e06ca51f0e7e9, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uAC15\uD615\uC6B1"
     thumbnail: {fileID: -855298285791758126, guid: f852c2c20f0b0304c81df347ab579604, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC885"
     thumbnail: {fileID: -855298285791758126, guid: 8a89e099e1ba2ac40bd1083bec8cf544, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC88B\uC544\uC694"
     thumbnail: {fileID: -855298285791758126, guid: dc4624e3019b9684e9a49b59d3f76baa, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uB9C8\uC220"
     thumbnail: {fileID: -855298285791758126, guid: 402921bf41ce94e4ebc611c500d95514, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC2A4\uD3F0\uC9C0\uBC25"
     thumbnail: {fileID: -855298285791758126, guid: f17f176a3bc2d744aad98e919e0cac6c, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uBDD4\uD398"
     thumbnail: {fileID: -855298285791758126, guid: ade3c7ab548875049b8d7562d1a90d7d, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uACB0\uD63C"
     thumbnail: {fileID: -855298285791758126, guid: bc113673d579a7d4db583ba3d9264b98, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC560\uAD6D\uAC00"
     thumbnail: {fileID: -855298285791758126, guid: a85360f271f4ed14d8b6093663ba0511, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: chatgpt
     thumbnail: {fileID: -855298285791758126, guid: 5066ed96d9654a54ba70b1cf690d41b3, type: 3}
+    postImages: []
+    isMiniGamePost: 0
     sceneName: Reel_Soldier
+  - title: "\uC545\uD50C"
+    thumbnail: {fileID: -7701980681550600647, guid: f897c832fceb3744cbcd0f8ca242fb05, type: 3}
+    postImages: []
+    isMiniGamePost: 1
+    sceneName: MiniGame3
   preventDuplicateOnScreen: 1
 --- !u!1 &964498007
 GameObject:
@@ -2040,7 +2078,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'RETURN
+  m_Text: '
 
 '
 --- !u!222 &972669268

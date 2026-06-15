@@ -3,6 +3,12 @@ using UnityEngine.UI; // 하트 이미지를 제어하기 위해 반드시 필�
 
 public class AvoidPlayer : MonoBehaviour
 {
+    [Header("Player Expression")]
+    [SerializeField] private Image playerImage;
+    [SerializeField] private Sprite smileSprite;
+    [SerializeField] private Sprite sadSprite;
+    [SerializeField] private float sadExpressionDuration = 0.8f;
+
     public float moveSpeed = 500f; // 캐릭터 이동 속도
     public float collisionDistance = 60f; // 충돌로 인정할 거리
 
@@ -12,15 +18,22 @@ public class AvoidPlayer : MonoBehaviour
 
     private RectTransform rectTransform;
     private Canvas rootCanvas;
+    private Coroutine expressionCoroutine;
 
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         rootCanvas = GetComponentInParent<Canvas>();
+        if (playerImage == null)
+        {
+            playerImage = GetComponent<Image>();
+        }
     }
 
     void Start()
     {
+        ShowSmile();
+
         // 게임 시작 시, 연결된 하트 이미지의 개수만큼 체력을 설정합니다.
         if (heartImages != null && heartImages.Length > 0)
         {
@@ -117,6 +130,7 @@ public class AvoidPlayer : MonoBehaviour
 
         // 체력을 1 깎음
         currentHp--;
+        ShowSadExpression();
 
         // 체력이 깎인 순서에 해당하는 하트 오브젝트를 꺼버림
         if (heartImages != null && currentHp < heartImages.Length && heartImages[currentHp] != null)
@@ -128,6 +142,37 @@ public class AvoidPlayer : MonoBehaviour
         if (currentHp <= 0)
         {
             Debug.Log("💀 모든 하트 소진! 게임 오버!");
+        }
+    }
+    void ShowSadExpression()
+    {
+        if (playerImage == null || sadSprite == null) return;
+
+        playerImage.sprite = sadSprite;
+
+        if (expressionCoroutine != null)
+        {
+            StopCoroutine(expressionCoroutine);
+        }
+
+        if (currentHp > 0)
+        {
+            expressionCoroutine = StartCoroutine(RestoreSmileAfterDelay());
+        }
+    }
+
+    System.Collections.IEnumerator RestoreSmileAfterDelay()
+    {
+        yield return new WaitForSeconds(sadExpressionDuration);
+        ShowSmile();
+        expressionCoroutine = null;
+    }
+
+    void ShowSmile()
+    {
+        if (playerImage != null && smileSprite != null)
+        {
+            playerImage.sprite = smileSprite;
         }
     }
 } // 클래스를 닫는 마지막 중괄호

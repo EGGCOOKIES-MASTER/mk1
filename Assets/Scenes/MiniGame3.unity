@@ -482,7 +482,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -205270267638800340, guid: 2c02d55cfe0af0c40b765cd7b5fea852, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -598,16 +598,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9963192, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 5340006419913026052, guid: 128beab85178bc640add61a255abebae, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -635,6 +635,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5edf83a7b3374dd4193446c0e1a4483e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AvoidPlayer
+  playerImage: {fileID: 1680791686}
+  smileSprite: {fileID: 4677792964791213606, guid: 4109a969c2e1f9f4581f4586087672ec, type: 3}
+  sadSprite: {fileID: 4147849632764806620, guid: 04810e9f24a05e747bd0e3d78526b4d2, type: 3}
+  sadExpressionDuration: 0.8
   moveSpeed: 500
   collisionDistance: 120
   heartImages:
@@ -777,7 +781,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -205270267638800340, guid: 2c02d55cfe0af0c40b765cd7b5fea852, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -852,7 +856,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -205270267638800340, guid: 2c02d55cfe0af0c40b765cd7b5fea852, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
