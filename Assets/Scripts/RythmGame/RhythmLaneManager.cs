@@ -31,6 +31,7 @@ public class RhythmLaneManager : MonoBehaviour
     private float nextSpawnTime = 0f;    // 다음 노트가 생성될 무작위 목표 시간
     private float spawnTimer = 0f;
     private bool isGameOver = false;
+    private bool didClearGame = false;
 
     void Start()
     {
@@ -161,6 +162,7 @@ public class RhythmLaneManager : MonoBehaviour
     void EndGame(bool isFailed)
     {
         isGameOver = true;
+        didClearGame = !isFailed;
 
         RhythmNote[] activeNotes = FindObjectsByType<RhythmNote>(FindObjectsSortMode.None);
         foreach (RhythmNote note in activeNotes) note.DestroyNote();
@@ -184,6 +186,13 @@ public class RhythmLaneManager : MonoBehaviour
 
     public void GoToLobby()
     {
+        if (didClearGame && GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMiniGameComplete();
+            return;
+        }
+
+        GameManager.SetPendingInitialState(GameManager.GameState.Algorithm);
         SceneManager.LoadScene("MainScene");
     }
 }

@@ -331,6 +331,11 @@ public class GameManager : MonoBehaviour
         
         // ★ 배터리 초기화: 이 작업이 없으면 이전 게임의 배터리가 유지됨
         battery = 100f;
+        if (MentalManager.Instance != null)
+        {
+            MentalManager.Instance.ResetMental();
+        }
+        ThreeReelsGrid.ResetPersistentSession();
         Debug.Log($"⚡ 배터리 초기화: {battery}%");
 
         // Algorithm 화면을 릴스 허브처럼 사용할 때는 현재 화면을 유지한다.
@@ -427,6 +432,13 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("✅ 콘텐츠 소비 완료!");
 
+        // 미니게임 클리어 보상/소모: 정신력 -5, 복귀 후 해당 릴스 완료 처리.
+        if (MentalManager.Instance != null)
+        {
+            MentalManager.Instance.DecreaseMental(5);
+        }
+
+        ThreeReelsGrid.NotifyMiniGameCompleted();
         EndReelsSessionAndDrain("mini_game_complete");
 
         /// 배터리 확인: 게임 계속 vs 게임 종료

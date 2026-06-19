@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,7 @@ public class ReelPostViewer : MonoBehaviour
     private ThreeReelsGrid.ReelEntry currentPost;
     private Sprite[] currentImages;
     private int currentImageIndex;
+    private Action onViewed;
 
     private void Awake()
     {
@@ -39,12 +41,18 @@ public class ReelPostViewer : MonoBehaviour
 
     public void Open(ThreeReelsGrid.ReelEntry post)
     {
+        Open(post, null);
+    }
+
+    public void Open(ThreeReelsGrid.ReelEntry post, Action viewedCallback)
+    {
         if (post == null)
         {
             return;
         }
 
         currentPost = post;
+        onViewed = viewedCallback;
         currentImages = GetImagesForPost(post);
         currentImageIndex = 0;
 
@@ -103,6 +111,12 @@ public class ReelPostViewer : MonoBehaviour
 
         currentImageIndex = (currentImageIndex + 1) % currentImages.Length;
         ShowCurrent();
+
+        // Reaching the last image also counts as viewing the reel.
+        if (currentImageIndex == currentImages.Length - 1)
+        {
+            onViewed?.Invoke();
+        }
     }
 
     private void ShowPrevious()
@@ -118,6 +132,7 @@ public class ReelPostViewer : MonoBehaviour
 
     private void Close()
     {
+        onViewed?.Invoke();
         gameObject.SetActive(false);
     }
 }

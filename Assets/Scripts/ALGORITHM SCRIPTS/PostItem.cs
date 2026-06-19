@@ -16,12 +16,14 @@ public class PostItem : MonoBehaviour, IPointerClickHandler {
 
     // 바인딩된 데이터 레퍼런스
     private PostData data;
+    private bool isCompleted;
 
     /// <summary>
     /// 간단한 바인딩: 제목만 표시
     /// </summary>
     public void Bind(PostData post) {
         data = post;
+        isCompleted = false;
         if (titleText != null) titleText.text = post.title ?? "";
 
         // 고유한 색상 생성(시각적 구분용)
@@ -37,6 +39,11 @@ public class PostItem : MonoBehaviour, IPointerClickHandler {
     /// </summary>
     public void OnPointerClick(PointerEventData eventData) {
         Debug.Log($"Post clicked: {data?.id ?? "unknown"}");
+        if (!isCompleted && MentalManager.Instance != null) {
+            isCompleted = true;
+            MentalManager.Instance.DecreaseMental(3);
+        }
+
         if (GameManager.Instance != null) {
             GameManager.Instance.OnMiniGameStart();
         }

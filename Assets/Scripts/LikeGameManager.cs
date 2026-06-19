@@ -89,6 +89,12 @@ public class LikeGameManager : MonoBehaviour
 
     public void GoHome()
     {
+        if (state == GameState.Win && GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMiniGameComplete();
+            return;
+        }
+
         GameManager.SetPendingInitialState(GameManager.GameState.Algorithm);
 
         if (GameManager.Instance != null)
