@@ -118,6 +118,7 @@ public class UIManager : MonoBehaviour
                 {
                     appClickScreen.gameObject.SetActive(true);  // 화면 표시
                     appClickScreen.Initialize();                 // 화면 초기화
+                    RefreshLowMentalVisual(appClickScreen);
                 }
                 break;
 
@@ -128,6 +129,7 @@ public class UIManager : MonoBehaviour
                 {
                     loginScreen.gameObject.SetActive(true);     // 화면 표시
                     loginScreen.Initialize();                    // 통계 표시
+                    RefreshLowMentalVisual(loginScreen);
                 }
                 break;
 
@@ -137,6 +139,7 @@ public class UIManager : MonoBehaviour
                 if (algorithmScreen != null)
                 {
                     algorithmScreen.gameObject.SetActive(true);  // 화면 표시
+                    RefreshLowMentalVisual(algorithmScreen);
                     if (algorithmScreen.isActiveAndEnabled)
                     {
                         algorithmScreen.Initialize();             // 테마 버튼 활성화
@@ -151,6 +154,7 @@ public class UIManager : MonoBehaviour
                 {
                     endingScreen.gameObject.SetActive(true);    // 화면 표시
                     endingScreen.Initialize();                   // 통계 표시
+                    RefreshLowMentalVisual(endingScreen);
                 }
                 break;
 
@@ -158,6 +162,20 @@ public class UIManager : MonoBehaviour
             default:
                 Debug.LogError($"❌ 알 수 없는 게임 상태: {state}");
                 break;
+        }
+    }
+
+    private void RefreshLowMentalVisual(Component screen)
+    {
+        if (screen == null)
+        {
+            return;
+        }
+
+        LowMentalScreenVisual visual = screen.GetComponent<LowMentalScreenVisual>();
+        if (visual != null)
+        {
+            visual.RefreshVisualState();
         }
     }
 }

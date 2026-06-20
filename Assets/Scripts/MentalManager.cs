@@ -48,6 +48,7 @@ public class MentalManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         currentMental = Mathf.Clamp(currentMental, 0, maxMental);
+        isLowMentalState = currentMental <= lowMentalThreshold;
         SceneManager.sceneLoaded += OnSceneLoaded;
         UpdateMentalUI();
     }

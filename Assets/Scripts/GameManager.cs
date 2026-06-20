@@ -391,6 +391,7 @@ public class GameManager : MonoBehaviour
     {
         float previous = battery;
         battery = Mathf.Max(0f, battery - Mathf.Max(0f, amount));
+
         Debug.Log($"🧠 정신력 감소({reason}) - {previous:F1}% -> {battery:F1}% (세션 {sessionSeconds:F1}s)");
     }
 

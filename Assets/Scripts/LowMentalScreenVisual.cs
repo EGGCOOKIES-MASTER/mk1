@@ -14,6 +14,7 @@ public class LowMentalScreenVisual : MonoBehaviour
     [SerializeField] private Sprite lowMentalBackground;
 
     [Header("Tint")]
+    [SerializeField] private bool tintChildGraphics = false;
     [SerializeField] private bool autoCollectChildGraphics = true;
     [SerializeField] private Graphic[] tintTargets;
     [SerializeField] private Color lowMentalColor = new Color(0.35f, 0.18f, 0.23f, 1f);
@@ -26,7 +27,6 @@ public class LowMentalScreenVisual : MonoBehaviour
 
     private readonly List<Graphic> collectedGraphics = new List<Graphic>();
     private readonly List<Color> originalGraphicColors = new List<Color>();
-    private bool isApplied;
 
     private void Awake()
     {
@@ -36,11 +36,7 @@ public class LowMentalScreenVisual : MonoBehaviour
     private void OnEnable()
     {
         SubscribeMentalEvents();
-
-        if (MentalManager.Instance != null && MentalManager.Instance.IsLowMentalState)
-        {
-            ApplyLowMentalState();
-        }
+        RefreshVisualState();
     }
 
     private void OnDisable()
@@ -88,6 +84,8 @@ public class LowMentalScreenVisual : MonoBehaviour
         {
             MentalManager.Instance.OnLowMentalState -= ApplyLowMentalState;
             MentalManager.Instance.OnLowMentalState += ApplyLowMentalState;
+            MentalManager.Instance.OnMentalChanged -= OnMentalChanged;
+            MentalManager.Instance.OnMentalChanged += OnMentalChanged;
         }
     }
 
@@ -96,18 +94,12 @@ public class LowMentalScreenVisual : MonoBehaviour
         if (MentalManager.Instance != null)
         {
             MentalManager.Instance.OnLowMentalState -= ApplyLowMentalState;
+            MentalManager.Instance.OnMentalChanged -= OnMentalChanged;
         }
     }
 
     public void ApplyLowMentalState()
     {
-        if (isApplied)
-        {
-            return;
-        }
-
-        isApplied = true;
-
         if (backgroundImage != null && lowMentalBackground != null)
         {
             if (normalBackground == null)
@@ -118,21 +110,70 @@ public class LowMentalScreenVisual : MonoBehaviour
             backgroundImage.sprite = lowMentalBackground;
         }
 
-        for (int i = 0; i < collectedGraphics.Count; i++)
+        if (backgroundImage != null)
         {
-            if (collectedGraphics[i] == null)
-            {
-                continue;
-            }
+            backgroundImage.color = Color.white;
+        }
 
-            Color originalColor = originalGraphicColors[i];
-            Color lowColor = Color.Lerp(originalColor, lowMentalColor, tintBlendAmount);
-            lowColor.a = originalColor.a;
-            collectedGraphics[i].color = lowColor;
+        if (tintChildGraphics)
+        {
+            for (int i = 0; i < collectedGraphics.Count; i++)
+            {
+                if (collectedGraphics[i] == null)
+                {
+                    continue;
+                }
+
+                if (collectedGraphics[i] == backgroundImage)
+                {
+                    collectedGraphics[i].color = originalGraphicColors[i];
+                    continue;
+                }
+
+                Color originalColor = originalGraphicColors[i];
+                Color lowColor = Color.Lerp(originalColor, lowMentalColor, tintBlendAmount);
+                lowColor.a = originalColor.a;
+                collectedGraphics[i].color = lowColor;
+            }
         }
 
         SetObjectsActive(showOnLowMental, true);
         SetObjectsActive(hideOnLowMental, false);
+    }
+
+    private void ApplyNormalState()
+    {
+        if (backgroundImage != null && normalBackground != null)
+        {
+            backgroundImage.sprite = normalBackground;
+        }
+
+        for (int i = 0; i < collectedGraphics.Count; i++)
+        {
+            if (collectedGraphics[i] != null)
+            {
+                collectedGraphics[i].color = originalGraphicColors[i];
+            }
+        }
+
+        SetObjectsActive(showOnLowMental, false);
+        SetObjectsActive(hideOnLowMental, true);
+    }
+
+    public void RefreshVisualState()
+    {
+        if (MentalManager.Instance != null && MentalManager.Instance.IsLowMentalState)
+        {
+            ApplyLowMentalState();
+            return;
+        }
+
+        ApplyNormalState();
+    }
+
+    private void OnMentalChanged(int currentMental)
+    {
+        RefreshVisualState();
     }
 
     private void SetObjectsActive(GameObject[] targets, bool isActive)

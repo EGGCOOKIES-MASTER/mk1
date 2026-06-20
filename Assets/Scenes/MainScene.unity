@@ -376,7 +376,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 0}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -600,7 +600,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 189672722}
   normalBackground: {fileID: 8321279604266089148, guid: 04924f8c45e310b45a3a279284870b29, type: 3}
-  lowMentalBackground: {fileID: -3182387934509845564, guid: 5dbb2d74b3926e84d8b35e30f11583f5, type: 3}
+  lowMentalBackground: {fileID: -5987578156453310684, guid: 9648fc69176cb714b958fcd27a1ae6ca, type: 3}
+  tintChildGraphics: 0
   autoCollectChildGraphics: 1
   tintTargets: []
   lowMentalColor: {r: 0.35, g: 0.18, b: 0.23, a: 1}
@@ -1090,7 +1091,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 0}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1812,7 +1813,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 0}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1973,6 +1974,11 @@ MonoBehaviour:
     postImages: []
     isMiniGamePost: 1
     sceneName: MiniGame3
+  - title: "\uB9AC\uB4EC\uAC8C\uC784"
+    thumbnail: {fileID: -2548396448385457654, guid: 016ecd50e27391b4ab8f30d83e97864f, type: 3}
+    postImages: []
+    isMiniGamePost: 1
+    sceneName: MiniGame2
   strangeReels: []
   miniGameReelChance: 0.3
   preventDuplicateOnScreen: 1
@@ -2371,6 +2377,18 @@ MonoBehaviour:
   reelsPanel: {fileID: 1710315115}
   profilePanel: {fileID: 394392080}
   startOnReels: 1
+  homeBackground:
+    image: {fileID: 2062096680}
+    normalSprite: {fileID: -6217735509390721315, guid: 76ddbf6b3ef64a24284d8ebce3832f85, type: 3}
+    lowMentalSprite: {fileID: -5413769436413498804, guid: e2f531a181af46744a4f6cdbd231f6c3, type: 3}
+  reelsBackground:
+    image: {fileID: 964498009}
+    normalSprite: {fileID: 7173193707480596244, guid: acfb2419d9ac9aa42a6565cfeffda2f8, type: 3}
+    lowMentalSprite: {fileID: 4658854455866909095, guid: f2363e427b3205b4e8ad5dd6446f79a3, type: 3}
+  profileBackground:
+    image: {fileID: 1504924923}
+    normalSprite: {fileID: 6563250098935999485, guid: 93e0ab26143fb9f4691da957a274c39a, type: 3}
+    lowMentalSprite: {fileID: 8467081147028283366, guid: f165c178afbcb50449b89910f2f3688e, type: 3}
 --- !u!1 &1205410810
 GameObject:
   m_ObjectHideFlags: 0
@@ -2480,9 +2498,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d5d81e94ec4ce29d15e989a8db1f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 1205410812}
+  backgroundImage: {fileID: 1694647957}
   normalBackground: {fileID: -6038251785469154916, guid: 43a4fba35214d8143a971605e09edd8d, type: 3}
-  lowMentalBackground: {fileID: 0}
+  lowMentalBackground: {fileID: 5038446196295953883, guid: 03e63addddb287e49b56eb707ce283ab, type: 3}
+  tintChildGraphics: 0
   autoCollectChildGraphics: 1
   tintTargets: []
   lowMentalColor: {r: 0.35, g: 0.18, b: 0.23, a: 1}
@@ -2565,7 +2584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f8a4f5d9c3d4af0a7b52a4ad6e2d901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMental: 100
+  maxMental: 51
   currentMental: 100
   lowMentalThreshold: 50
   mentalText: {fileID: 0}
@@ -2957,15 +2976,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8773585, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -1194897612106893336, guid: e38767af0fa70fa40aa09d54edb64fec, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3975,7 +3994,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8189876646339247522, guid: 6d6f4bf664299d540a7d6f2611dc81ba, type: 3}
+  m_Sprite: {fileID: -6217735509390721315, guid: 76ddbf6b3ef64a24284d8ebce3832f85, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
