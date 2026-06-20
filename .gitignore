@@ -3,6 +3,10 @@
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+[Bb]uild*/
+*.zip
+완성본/
+완성본*/
 [Ll]ogs/
 UserSettings/
 

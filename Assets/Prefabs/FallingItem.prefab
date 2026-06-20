@@ -69,7 +69,7 @@ MonoBehaviour:
   m_text: "\uC545\uD50C \uD14C\uC2A4\uD2B8"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8603f3cf8e9160940864a9d1d7b5cb7b, type: 2}
-  m_sharedMaterial: {fileID: 2113835916393534908, guid: a34401ea89b486142a38b0ae0fef3a90, type: 2}
+  m_sharedMaterial: {fileID: 8062489769353676646, guid: 8603f3cf8e9160940864a9d1d7b5cb7b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

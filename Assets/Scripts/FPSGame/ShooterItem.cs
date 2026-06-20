@@ -43,6 +43,8 @@ public class ShooterItem : MonoBehaviour
     {
         if (ShooterGameManager.Instance == null || ShooterGameManager.Instance.IsFinished()) return;
 
+        GameAudioManager.PlayGunshot();
+
         if (isSkull)
         {
             ShooterGameManager.Instance.AddScore(10); // BAD 맞추면 점수업!

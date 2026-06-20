@@ -816,7 +816,7 @@ MonoBehaviour:
   maxSpeed: 1300
   speedIncreaseRate: 20
   spawnX: 1100
-  obstacleSpawnYOffset: 10
+  obstacleSpawnYOffset: 0
   maxLives: 3
   badWords:
   - "\uB178\uC7BC"
@@ -1596,10 +1596,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1346085263}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1582, y: 890}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &963799738
 MonoBehaviour:

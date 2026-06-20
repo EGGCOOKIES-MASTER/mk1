@@ -204,15 +204,22 @@ public class GameManager : MonoBehaviour
         currentState = newState;
         Debug.Log($"🔄 게임 상태 변경: {newState}");
 
-        // UIManager가 존재하는지 확인 후 새 화면 표시
-        // (null 체크로 오류 방지)
+        if (uiManager == null || uiManager.gameObject.scene.name != "MainScene")
+        {
+            uiManager = FindMainSceneUIManager();
+        }
+
         if (uiManager != null)
         {
             uiManager.ShowScreen(newState);
+            UIManager.ShowScreenDirectly(newState);
         }
         else
         {
-            Debug.LogWarning("⚠️ UIManager가 없어서 화면을 표시할 수 없습니다.");
+            if (!UIManager.ShowScreenDirectly(newState))
+            {
+                Debug.LogWarning($"UIManager와 화면 오브젝트를 찾지 못해 {newState} 화면을 표시할 수 없습니다.");
+            }
         }
     }
 
@@ -230,6 +237,11 @@ public class GameManager : MonoBehaviour
         if (uiManager != null)
         {
             uiManager.ShowScreen(currentState);
+            UIManager.ShowScreenDirectly(currentState);
+        }
+        else
+        {
+            UIManager.ShowScreenDirectly(currentState);
         }
     }
 

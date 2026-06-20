@@ -103,6 +103,8 @@ public class RhythmLaneManager : MonoBehaviour
             if (distance < 50f) // PERFECT
             {
                 score += 100 + (combo * 10); // [콤보 보너스] 콤보가 높을수록 보너스 점수!
+                GameAudioManager.PlayNoteHit();
+                GameAudioManager.PlayScoreUp();
                 combo++;                     // 콤보 상승
                 judgmentEffect.ShowText("PERFECT!!!", Color.yellow);
                 UpdateScoreUI();
@@ -113,6 +115,8 @@ public class RhythmLaneManager : MonoBehaviour
             else if (distance < 100f) // GOOD
             {
                 score += 50 + (combo * 5);   // [콤보 보너스]
+                GameAudioManager.PlayNoteHit();
+                GameAudioManager.PlayScoreUp();
                 combo++;                     // 콤보 상승
                 judgmentEffect.ShowText("GOOD!", Color.green);
                 UpdateScoreUI();
@@ -134,6 +138,7 @@ public class RhythmLaneManager : MonoBehaviour
         UpdateComboUI();
 
         currentHP--;
+        GameAudioManager.PlayHealthDown();
         if (heartImages != null && currentHP >= 0 && currentHP < heartImages.Length)
         {
             heartImages[currentHP].gameObject.SetActive(false);

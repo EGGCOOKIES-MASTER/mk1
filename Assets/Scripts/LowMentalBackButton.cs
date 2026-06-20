@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,9 @@ public class LowMentalBackButton : MonoBehaviour
     [SerializeField] private Button backButton;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private bool hideUntilLowMental = true;
+    [SerializeField] private float navigationCooldown = 0.5f;
+
+    private bool isNavigating;
 
     private void Awake()
     {
@@ -125,32 +129,90 @@ public class LowMentalBackButton : MonoBehaviour
 
     private void GoBackOneScreen()
     {
-        ShowButton();
+        if (isNavigating || GameManager.Instance == null)
+        {
+            return;
+        }
 
+        isNavigating = true;
+        backButton.interactable = false;
+
+        UIManager uiManager = FindMainSceneUIManager();
+        GameManager.GameState targetState = GameManager.Instance.CurrentState == GameManager.GameState.Login
+            ? GameManager.GameState.AppClick
+            : GameManager.GameState.Login;
+
+        if (targetState == GameManager.GameState.AppClick)
+        {
+            HideButton();
+        }
+
+        ApplyTargetState(uiManager, targetState);
+        StartCoroutine(CompleteNavigation(uiManager, targetState));
+    }
+
+    private UIManager FindMainSceneUIManager()
+    {
+        UIManager[] managers = FindObjectsByType<UIManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            UIManager manager = managers[i];
+            if (manager != null && manager.gameObject.scene.name == "MainScene")
+            {
+                return manager;
+            }
+        }
+
+        return null;
+    }
+
+    private void ApplyTargetState(UIManager uiManager, GameManager.GameState targetState)
+    {
         if (GameManager.Instance == null)
         {
             return;
         }
 
-        switch (GameManager.Instance.CurrentState)
+        if (uiManager != null)
         {
-            case GameManager.GameState.Algorithm:
-                GameManager.Instance.ChangeState(GameManager.GameState.Login);
-                break;
+            GameManager.Instance.SetStateWithoutUI(targetState);
+            if (targetState == GameManager.GameState.Login)
+            {
+                uiManager.ShowLoginFromBackButton();
+            }
+            else
+            {
+                uiManager.ShowScreen(targetState);
+            }
 
-            case GameManager.GameState.Login:
-                GameManager.Instance.ChangeState(GameManager.GameState.AppClick);
-                HideButton();
-                break;
-
-            case GameManager.GameState.AppClick:
-                HideButton();
-                break;
-
-            default:
-                GameManager.Instance.ChangeState(GameManager.GameState.AppClick);
-                HideButton();
-                break;
+            transform.SetAsLastSibling();
+            return;
         }
+
+        GameManager.Instance.SetStateWithoutUI(targetState);
+        UIManager.ShowScreenDirectly(targetState);
+        transform.SetAsLastSibling();
+    }
+
+    private IEnumerator CompleteNavigation(UIManager uiManager, GameManager.GameState targetState)
+    {
+        yield return new WaitForEndOfFrame();
+
+        bool wrongGameState = GameManager.Instance != null && GameManager.Instance.CurrentState != targetState;
+        bool wrongVisibleState = !UIManager.IsScreenVisibleDirectly(targetState);
+        if (wrongGameState || wrongVisibleState)
+        {
+            ApplyTargetState(uiManager, targetState);
+        }
+
+        yield return new WaitForSecondsRealtime(navigationCooldown);
+        isNavigating = false;
+
+        if (backButton != null)
+        {
+            backButton.interactable = true;
+        }
+
+        RefreshVisibility();
     }
 }

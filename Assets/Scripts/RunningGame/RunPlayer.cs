@@ -5,15 +5,57 @@ public class RunPlayer : MonoBehaviour
     public float jumpForce = 800f;   // 점프하는 힘
     public float gravity = 2000f;    // 아래로 떨어지는 중력 힘
 
+    [Header("Ground Alignment")]
+    [SerializeField] private RectTransform floor;
+    [SerializeField] private float leftPadding = 80f;
+
     private float velocityY = 0f;    // Y축 현재 속도
     private float groundY;           // 시작 위치를 바닥 기준으로 사용
+    private float floorTopY;
     private bool isGrounded = true;  // 바닥에 서 있는지 여부
 
     public float GroundY => groundY;
+    public float FloorTopY => floorTopY;
 
     void Start()
     {
-        groundY = transform.localPosition.y;
+        AlignToFloor();
+    }
+
+    private void AlignToFloor()
+    {
+        RectTransform playerRect = transform as RectTransform;
+        RectTransform parentRect = transform.parent as RectTransform;
+        if (playerRect == null || parentRect == null)
+        {
+            groundY = transform.localPosition.y;
+            floorTopY = groundY;
+            return;
+        }
+
+        if (floor == null)
+        {
+            Transform floorTransform = transform.parent.Find("Floor");
+            floor = floorTransform as RectTransform;
+        }
+
+        Canvas.ForceUpdateCanvases();
+
+        if (floor != null)
+        {
+            Vector3[] floorCorners = new Vector3[4];
+            floor.GetWorldCorners(floorCorners);
+            floorTopY = parentRect.InverseTransformPoint(floorCorners[1]).y;
+        }
+        else
+        {
+            floorTopY = -parentRect.rect.height * 0.5f;
+        }
+
+        float playerBottomOffset = playerRect.rect.height * playerRect.pivot.y;
+        groundY = floorTopY + playerBottomOffset;
+        float playerX = -parentRect.rect.width * 0.5f + leftPadding + playerRect.rect.width * playerRect.pivot.x;
+        transform.localPosition = new Vector3(playerX, groundY, 0f);
     }
 
     void Update()

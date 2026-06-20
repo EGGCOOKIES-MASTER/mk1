@@ -24,6 +24,9 @@
 
 public class UIManager : MonoBehaviour
 {
+    public GameManager.GameState CurrentVisibleState { get; private set; } = GameManager.GameState.AppClick;
+    public bool IsLoginScreenVisible => loginScreen != null && loginScreen.gameObject.activeInHierarchy;
+
     /// ===== 【 화면 참조 】 =====
     /// [SerializeField]로 선언해서 Inspector에서 할당 가능
     /// 각 화면은 패널 또는 Canvas의 하위 게임오브젝트
@@ -104,6 +107,8 @@ public class UIManager : MonoBehaviour
     /// ============================================================
     public void ShowScreen(GameManager.GameState state)
     {
+        CurrentVisibleState = state;
+
         /// Step 1: 모든 화면 비활성화
         /// 새 화면을 보여주기 전에 기존 화면들을 숨김
         InitializeAllScreens();
@@ -162,6 +167,157 @@ public class UIManager : MonoBehaviour
             default:
                 Debug.LogError($"❌ 알 수 없는 게임 상태: {state}");
                 break;
+        }
+    }
+
+    public void ShowLoginFromBackButton()
+    {
+        ShowScreen(GameManager.GameState.Login);
+    }
+
+    public static bool ShowScreenDirectly(GameManager.GameState state)
+    {
+        AppClickScreen appClick = FindScreen<AppClickScreen>();
+        LoginScreen login = FindScreen<LoginScreen>();
+        AlgorithmScreen algorithm = FindScreen<AlgorithmScreen>();
+        EndingScreen ending = FindScreen<EndingScreen>();
+
+        if (appClick == null && login == null && algorithm == null && ending == null)
+        {
+            return false;
+        }
+
+        DisableScreensDirectly<AppClickScreen>();
+        DisableScreensDirectly<LoginScreen>();
+        DisableScreensDirectly<AlgorithmScreen>();
+        DisableScreensDirectly<EndingScreen>();
+
+        switch (state)
+        {
+            case GameManager.GameState.AppClick:
+                if (appClick == null) return false;
+                appClick.gameObject.SetActive(true);
+                appClick.Initialize();
+                RefreshDirectLowMentalVisual(appClick);
+                SyncVisibleState(GameManager.GameState.AppClick);
+                return true;
+
+            case GameManager.GameState.Login:
+                if (login == null) return false;
+                login.gameObject.SetActive(true);
+                login.Initialize();
+                RefreshDirectLowMentalVisual(login);
+                SyncVisibleState(GameManager.GameState.Login);
+                return true;
+
+            case GameManager.GameState.Algorithm:
+                if (algorithm == null) return false;
+                algorithm.gameObject.SetActive(true);
+                RefreshDirectLowMentalVisual(algorithm);
+                if (algorithm.isActiveAndEnabled)
+                {
+                    algorithm.Initialize();
+                }
+                SyncVisibleState(GameManager.GameState.Algorithm);
+                return true;
+
+            case GameManager.GameState.Ending:
+                if (ending == null) return false;
+                ending.gameObject.SetActive(true);
+                ending.Initialize();
+                RefreshDirectLowMentalVisual(ending);
+                SyncVisibleState(GameManager.GameState.Ending);
+                return true;
+        }
+
+        return false;
+    }
+
+    public static bool IsScreenVisibleDirectly(GameManager.GameState state)
+    {
+        switch (state)
+        {
+            case GameManager.GameState.AppClick:
+                return IsMainSceneScreenVisible<AppClickScreen>();
+
+            case GameManager.GameState.Login:
+                return IsMainSceneScreenVisible<LoginScreen>();
+
+            case GameManager.GameState.Algorithm:
+                return IsMainSceneScreenVisible<AlgorithmScreen>();
+
+            case GameManager.GameState.Ending:
+                return IsMainSceneScreenVisible<EndingScreen>();
+        }
+
+        return false;
+    }
+
+    private static T FindScreen<T>() where T : Component
+    {
+        T[] screens = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        T fallback = null;
+
+        for (int i = 0; i < screens.Length; i++)
+        {
+            T screen = screens[i];
+            if (screen == null)
+            {
+                continue;
+            }
+
+            string sceneName = screen.gameObject.scene.name;
+            if (sceneName == "MainScene")
+            {
+                return screen;
+            }
+
+            if (fallback == null && screen.gameObject.scene.IsValid())
+            {
+                fallback = screen;
+            }
+        }
+
+        return fallback;
+    }
+
+    private static void DisableScreensDirectly<T>() where T : Component
+    {
+        T[] screens = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < screens.Length; i++)
+        {
+            if (screens[i] != null)
+            {
+                screens[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private static bool IsMainSceneScreenVisible<T>() where T : Component
+    {
+        T screen = FindScreen<T>();
+        return screen != null && screen.gameObject.activeInHierarchy;
+    }
+
+    private static void SyncVisibleState(GameManager.GameState state)
+    {
+        UIManager[] managers = FindObjectsByType<UIManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < managers.Length; i++)
+        {
+            if (managers[i] != null && managers[i].gameObject.scene.name == "MainScene")
+            {
+                managers[i].CurrentVisibleState = state;
+                return;
+            }
+        }
+    }
+
+    private static void RefreshDirectLowMentalVisual(Component screen)
+    {
+        LowMentalScreenVisual visual = screen != null ? screen.GetComponent<LowMentalScreenVisual>() : null;
+        if (visual != null)
+        {
+            visual.RefreshVisualState();
         }
     }
 

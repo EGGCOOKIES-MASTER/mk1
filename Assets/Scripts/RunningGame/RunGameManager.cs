@@ -20,7 +20,7 @@ public class RunGameManager : MonoBehaviour
     public float maxSpeed = 1300f;
     public float speedIncreaseRate = 20f;
     public float spawnX = 1100f;
-    public float obstacleSpawnYOffset = 10f;
+    public float obstacleSpawnYOffset = 0f;
 
     [Header("라이프 세팅")]
     public int maxLives = 3;
@@ -88,13 +88,25 @@ public class RunGameManager : MonoBehaviour
 
         GameObject obstacle = Instantiate(obstaclePrefab, canvasTransform);
         float spawnY = -257f;
+        float spawnPositionX = spawnX;
+        RectTransform obstacleRect = obstacle.transform as RectTransform;
+        RectTransform canvasRect = canvasTransform as RectTransform;
         RunPlayer player = FindFirstObjectByType<RunPlayer>();
         if (player != null)
         {
-            spawnY = player.GroundY + obstacleSpawnYOffset;
+            float obstacleBottomOffset = obstacleRect != null
+                ? obstacleRect.rect.height * obstacleRect.pivot.y
+                : 0f;
+            spawnY = player.FloorTopY + obstacleBottomOffset + obstacleSpawnYOffset;
         }
 
-        obstacle.transform.localPosition = new Vector3(spawnX, spawnY, 0f);
+        if (canvasRect != null)
+        {
+            float obstacleHalfWidth = obstacleRect != null ? obstacleRect.rect.width * 0.5f : 0f;
+            spawnPositionX = canvasRect.rect.width * 0.5f + obstacleHalfWidth;
+        }
+
+        obstacle.transform.localPosition = new Vector3(spawnPositionX, spawnY, 0f);
 
         string randomBadWord = badWords[Random.Range(0, badWords.Length)];
 
@@ -110,6 +122,7 @@ public class RunGameManager : MonoBehaviour
         if (isGameOver || isGameClear) return;
 
         currentLives--;
+        GameAudioManager.PlayHealthDown();
         UpdateHeartUI();
 
         if (currentLives <= 0)
@@ -230,6 +243,7 @@ public class MoveObstacle : MonoBehaviour
             if (dist < 70f)
             {
                 hasCollided = true;
+                GameAudioManager.PlayCollision();
 
                 RunGameManager manager = FindFirstObjectByType<RunGameManager>();
                 if (manager != null)

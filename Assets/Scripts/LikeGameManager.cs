@@ -50,6 +50,7 @@ public class LikeGameManager : MonoBehaviour
     {
         if (state != GameState.Playing) return;
         currentLikes += likePower;
+        GameAudioManager.PlayScoreUp();
     }
 
     void GameWin()

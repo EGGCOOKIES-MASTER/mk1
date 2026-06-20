@@ -122,6 +122,7 @@ public class ShooterGameManager : MonoBehaviour
     {
         if (isGameFinished) return;
         score += amount;
+        GameAudioManager.PlayScoreUp();
     }
 
     public void TakeDamage()
@@ -129,6 +130,7 @@ public class ShooterGameManager : MonoBehaviour
         if (isGameFinished) return;
 
         currentLives--;
+        GameAudioManager.PlayHealthDown();
         UpdateHeartUI();
 
         if (currentLives <= 0)
