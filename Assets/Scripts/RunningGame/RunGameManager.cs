@@ -19,6 +19,8 @@ public class RunGameManager : MonoBehaviour
     public float initialSpeed = 500f;
     public float maxSpeed = 1300f;
     public float speedIncreaseRate = 20f;
+    public float spawnX = 1100f;
+    public float obstacleSpawnYOffset = 10f;
 
     [Header("라이프 세팅")]
     public int maxLives = 3;
@@ -85,7 +87,14 @@ public class RunGameManager : MonoBehaviour
         if (obstaclePrefab == null || canvasTransform == null) return;
 
         GameObject obstacle = Instantiate(obstaclePrefab, canvasTransform);
-        obstacle.transform.localPosition = new Vector3(1100f, -180f, 0f);
+        float spawnY = -257f;
+        RunPlayer player = FindFirstObjectByType<RunPlayer>();
+        if (player != null)
+        {
+            spawnY = player.GroundY + obstacleSpawnYOffset;
+        }
+
+        obstacle.transform.localPosition = new Vector3(spawnX, spawnY, 0f);
 
         string randomBadWord = badWords[Random.Range(0, badWords.Length)];
 
@@ -185,7 +194,7 @@ public class RunGameManager : MonoBehaviour
 
     public void ClickHome()
     {
-        SceneManager.LoadScene("MainScene");
+        GameManager.ReturnToAlgorithmScreen();
     }
 }
 

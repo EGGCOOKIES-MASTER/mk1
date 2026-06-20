@@ -1891,95 +1891,350 @@ MonoBehaviour:
   reels:
   - title: Karina
     thumbnail: {fileID: 1986015356589799072, guid: fc58bf99f194aac418d9732cae0b2618, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 13074a7208716c84abbc35b591b14aeb, type: 3}
+    - {fileID: 6937817954938267909, guid: 1fbd4565d8e819040ab704009e0929dd, type: 3}
+    - {fileID: -6470460504253458178, guid: 46c9cd86a1c42f945a8712b21435b3ba, type: 3}
+    - {fileID: -4178046375966092550, guid: b178e6243cb4f024582b2f0440b534ea, type: 3}
+    - {fileID: 4130640169021434097, guid: 53f8660b1fc04a84ab932ea189e6a27d, type: 3}
+    - {fileID: 3465286685962602723, guid: fac821b832cf4884899b059c434904e0, type: 3}
+    - {fileID: 7028616704906629411, guid: eebd9676a58ce544ab24ee7affc65742, type: 3}
+    - {fileID: 8288426215254106694, guid: 30cb23bd98d645b4e81879cbc012a892, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Karina
   - title: T1
     thumbnail: {fileID: 1651502996231628893, guid: c9a0dd0b06ccfb043917be859965738e, type: 3}
-    postImages: []
+    pages: []
     isMiniGamePost: 1
     sceneName: MiniGame
   - title: "\uC608\uBE44\uAD70"
     thumbnail: {fileID: -7733208066925729262, guid: dd733a4cfa700a2458a7ada505107642, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 2e52a5d538c507d468b35df7e17fd779, type: 3}
+    - {fileID: 6937817954938267909, guid: 459e0de92abf72342afd9949ebba046f, type: 3}
+    - {fileID: -6470460504253458178, guid: 0ab23078e4d94d245bec35a34e62390f, type: 3}
+    - {fileID: -4178046375966092550, guid: 0844317127257874b988c37f5d7d75e7, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC0AC\uADF9"
     thumbnail: {fileID: -855298285791758126, guid: 0b2914197d338b347b47675985f90d3b, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 0b2914197d338b347b47675985f90d3b, type: 3}
+    - {fileID: 6937817954938267909, guid: c0e127955614bf54eb3def65bd7046bc, type: 3}
+    - {fileID: -6470460504253458178, guid: 33ad1173b44934e4f8a4a4032b7c2d79, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uB2E4\uC774\uC18C"
     thumbnail: {fileID: -855298285791758126, guid: 8b1b54bafda960642a6d18d161cae6a8, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 8b1b54bafda960642a6d18d161cae6a8, type: 3}
+    - {fileID: 6937817954938267909, guid: a22c69aeaa06fb54aaf355959d747ebf, type: 3}
+    - {fileID: -6470460504253458178, guid: a5c041ad83d2393448be61a3b5a39d8e, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uAE30\uC0C1\uCE90\uC2A4\uD130"
     thumbnail: {fileID: -855298285791758126, guid: ef789158b03b6e34abe74e27b46afbb5, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: ef789158b03b6e34abe74e27b46afbb5, type: 3}
+    - {fileID: 6937817954938267909, guid: ce05b9caf8acca94b859b971f5854344, type: 3}
+    - {fileID: -6470460504253458178, guid: 919ad776ec94ec349874446285db615d, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uBCF4\uC774\uC2A4\uD53C\uC2F1"
     thumbnail: {fileID: -855298285791758126, guid: 5f83e5e3fcf6d324186e06ca51f0e7e9, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 5f83e5e3fcf6d324186e06ca51f0e7e9, type: 3}
+    - {fileID: 6937817954938267909, guid: 8c81cdb8eaf27594892da7dc5677bb62, type: 3}
+    - {fileID: -6470460504253458178, guid: 4673c4ee8485a824392a6f5e0b336463, type: 3}
+    - {fileID: -4178046375966092550, guid: d730ce47270da454eaf278d1e3d9ce6f, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uAC15\uD615\uC6B1"
     thumbnail: {fileID: -855298285791758126, guid: f852c2c20f0b0304c81df347ab579604, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: f852c2c20f0b0304c81df347ab579604, type: 3}
+    - {fileID: 6937817954938267909, guid: b0bc0b0adff973f4bb6a5894c5d1482b, type: 3}
+    - {fileID: -6470460504253458178, guid: ca36be4dc81f1834d8f1cf4011bbfe43, type: 3}
+    - {fileID: -4178046375966092550, guid: af1c6a3c018baca468634acbb4d23742, type: 3}
+    - {fileID: 4130640169021434097, guid: 8d2391aa32256e44b82dd49193d81b33, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC885"
     thumbnail: {fileID: -855298285791758126, guid: 8a89e099e1ba2ac40bd1083bec8cf544, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 8a89e099e1ba2ac40bd1083bec8cf544, type: 3}
+    - {fileID: 6937817954938267909, guid: 5b3e36538d74d8643b1711d40442f4c5, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC88B\uC544\uC694"
     thumbnail: {fileID: -855298285791758126, guid: dc4624e3019b9684e9a49b59d3f76baa, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: dc4624e3019b9684e9a49b59d3f76baa, type: 3}
+    - {fileID: 6937817954938267909, guid: 283e744d1426aea4a8e640cc4aa411e3, type: 3}
+    - {fileID: -6470460504253458178, guid: 4c4f009496d84c54b9ef0580dafa2198, type: 3}
+    - {fileID: -4178046375966092550, guid: 8694014cc4c730046bca34ad0c8438a8, type: 3}
+    - {fileID: 4130640169021434097, guid: b358e7e846c49614d8b52057aba9a5d1, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uB9C8\uC220"
     thumbnail: {fileID: -855298285791758126, guid: 402921bf41ce94e4ebc611c500d95514, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 402921bf41ce94e4ebc611c500d95514, type: 3}
+    - {fileID: 6937817954938267909, guid: 6214c2cf6c9bdec4092341e72432e387, type: 3}
+    - {fileID: -6470460504253458178, guid: 629f17ce53b966c4d82d6aff8620d637, type: 3}
+    - {fileID: -4178046375966092550, guid: fdbb8b9574683e44bbe2002e2511d52d, type: 3}
+    - {fileID: 4130640169021434097, guid: eae905a5f2d328440b784a3104092f0d, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC2A4\uD3F0\uC9C0\uBC25"
     thumbnail: {fileID: -855298285791758126, guid: f17f176a3bc2d744aad98e919e0cac6c, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: f17f176a3bc2d744aad98e919e0cac6c, type: 3}
+    - {fileID: 6937817954938267909, guid: c406590d694480e479e39e2472a4a028, type: 3}
+    - {fileID: -6470460504253458178, guid: 8934c5105301a704f81981eabd6d153f, type: 3}
+    - {fileID: -4178046375966092550, guid: f9c27518936804b4abbefa4e50873c5d, type: 3}
+    - {fileID: 4130640169021434097, guid: 0219360540d28ba4592346f419e65c32, type: 3}
+    - {fileID: 3465286685962602723, guid: 7b8e687848cf93747ab4fd6250d6e5fc, type: 3}
+    - {fileID: 7028616704906629411, guid: 15ab0d27c2588eb40a32c7d85c53b743, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uBDD4\uD398"
     thumbnail: {fileID: -855298285791758126, guid: ade3c7ab548875049b8d7562d1a90d7d, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: ade3c7ab548875049b8d7562d1a90d7d, type: 3}
+    - {fileID: 6937817954938267909, guid: 95c7aa61460d8f2469d3d0e36539540f, type: 3}
+    - {fileID: -6470460504253458178, guid: 06bc4eed10a3cac4eb9c244344901c1c, type: 3}
+    - {fileID: -4178046375966092550, guid: 20955c029b05f544aac0aa43f34feabc, type: 3}
+    - {fileID: 4130640169021434097, guid: 90df673a2bbbdb840b8a1517bb8a8f75, type: 3}
+    - {fileID: 3465286685962602723, guid: 4ff7a75c7f0c7b74cb6729d051cfd0b1, type: 3}
+    - {fileID: 7028616704906629411, guid: 4ead45df793bbff4aaa67ab6e38d4653, type: 3}
+    - {fileID: 8288426215254106694, guid: 8ea2e14eaeee9ec4b8fb88a1bba55b15, type: 3}
+    - {fileID: 4113829005332862926, guid: 08d20d6d82aba7e4fabba94e92b0f534, type: 3}
+    - {fileID: -5099292496197868168, guid: 539d03d6803922440844fec122ee0fa9, type: 3}
+    - {fileID: -2966200626249415253, guid: e4dfa749f74f06d49a7389aac8918e38, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uACB0\uD63C"
     thumbnail: {fileID: -855298285791758126, guid: bc113673d579a7d4db583ba3d9264b98, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: bc113673d579a7d4db583ba3d9264b98, type: 3}
+    - {fileID: 6937817954938267909, guid: b22b8c0f2ac94fc4993da2c6ace579e6, type: 3}
+    - {fileID: -6470460504253458178, guid: 7f2d2824401c92d4eb28e5ada828a808, type: 3}
+    - {fileID: -4178046375966092550, guid: b6d4e1eba1da29b41ad65a7bc6145b3f, type: 3}
+    - {fileID: 4130640169021434097, guid: 3a85a14903981b142acaeb448710ee81, type: 3}
+    - {fileID: 3465286685962602723, guid: a29f7a773c5ef084ca94e22f2d2df70e, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC560\uAD6D\uAC00"
     thumbnail: {fileID: -855298285791758126, guid: a85360f271f4ed14d8b6093663ba0511, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: a85360f271f4ed14d8b6093663ba0511, type: 3}
+    - {fileID: 6937817954938267909, guid: 420d5b6642b02a3499df9c1dbf0b5338, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: chatgpt
     thumbnail: {fileID: -855298285791758126, guid: 5066ed96d9654a54ba70b1cf690d41b3, type: 3}
-    postImages: []
+    pages:
+    - {fileID: -855298285791758126, guid: 5066ed96d9654a54ba70b1cf690d41b3, type: 3}
+    - {fileID: 6937817954938267909, guid: 9ade99323f4fa9040b3dc3f6988928a0, type: 3}
     isMiniGamePost: 0
     sceneName: Reel_Soldier
   - title: "\uC545\uD50C"
     thumbnail: {fileID: -7701980681550600647, guid: f897c832fceb3744cbcd0f8ca242fb05, type: 3}
-    postImages: []
+    pages: []
     isMiniGamePost: 1
-    sceneName: MiniGame3
+    sceneName: MiniGame6
   - title: "\uB9AC\uB4EC\uAC8C\uC784"
     thumbnail: {fileID: -2548396448385457654, guid: 016ecd50e27391b4ab8f30d83e97864f, type: 3}
-    postImages: []
+    pages: []
     isMiniGamePost: 1
     sceneName: MiniGame2
-  strangeReels: []
+  - title: "\uD06C\uB86C \uC810\uD504 \uAC8C\uC784 "
+    thumbnail: {fileID: -7192537606406557321, guid: eb34a0e514be4ba44bb65a81f0cfda3c, type: 3}
+    pages: []
+    isMiniGamePost: 1
+    sceneName: MiniGame5
+  - title: "\uC120\uAD00\uC704"
+    thumbnail: {fileID: -1459315263645557394, guid: b7c6bc955ee241246870d68fab804315, type: 3}
+    pages: []
+    isMiniGamePost: 1
+    sceneName: MiniGame4
+  strangeReels:
+  - title: 1
+    thumbnail: {fileID: -855298285791758126, guid: 36d3dc915e7d1054698f88486c6cd8fd, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 36d3dc915e7d1054698f88486c6cd8fd, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 2
+    thumbnail: {fileID: -855298285791758126, guid: bab909d1aa9e09a4ab283112f6b44bb9, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: bab909d1aa9e09a4ab283112f6b44bb9, type: 3}
+    - {fileID: 6937817954938267909, guid: 7ac4fcb3ad5b1ea4c820a3f03ab4cd6a, type: 3}
+    - {fileID: -6470460504253458178, guid: a52da408e8d5447499497e7380089227, type: 3}
+    - {fileID: -4178046375966092550, guid: 83cea06cab0ba2a47a2b392af7fce84c, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 3
+    thumbnail: {fileID: -855298285791758126, guid: e9d78ed2e154f5f438f943a68e00ee92, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: e9d78ed2e154f5f438f943a68e00ee92, type: 3}
+    - {fileID: 6937817954938267909, guid: 42d4ee459b074fc47bc2f12d04386f89, type: 3}
+    - {fileID: -6470460504253458178, guid: ac3636310aee5514ebfa78ad2d195527, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 4
+    thumbnail: {fileID: -855298285791758126, guid: ed964ff24214aed46ac92e1843ba3258, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: ed964ff24214aed46ac92e1843ba3258, type: 3}
+    - {fileID: 6937817954938267909, guid: 6239e092d3734c64db191adf25187c15, type: 3}
+    - {fileID: -6470460504253458178, guid: da7ac6c5c5246c647817d9505b5afa0f, type: 3}
+    - {fileID: -4178046375966092550, guid: d531b1c1224c1f149bf93e4602ab6a48, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 5
+    thumbnail: {fileID: -855298285791758126, guid: c74ca376b00be674d88484c822f8620a, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: c74ca376b00be674d88484c822f8620a, type: 3}
+    - {fileID: 6937817954938267909, guid: 982a8e45dd8160845ad77f076eced1d4, type: 3}
+    - {fileID: -6470460504253458178, guid: c73cebdc411ed074eaa8ebdf70e79976, type: 3}
+    - {fileID: -4178046375966092550, guid: a6467a38b74a09840b17be27fa699f53, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 6
+    thumbnail: {fileID: -855298285791758126, guid: b3e691adb2c96dd40ac024d72d37a19c, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: b3e691adb2c96dd40ac024d72d37a19c, type: 3}
+    - {fileID: 6937817954938267909, guid: 85c59dbc570928f4a9ae9085e73b49d6, type: 3}
+    - {fileID: -6470460504253458178, guid: 9f4db1e4ff6343b428d471e9896448cf, type: 3}
+    - {fileID: -4178046375966092550, guid: b5d1c83fdfd68f04f8e1fcee91ee9581, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 7
+    thumbnail: {fileID: -855298285791758126, guid: f71c06fdbc5d5f943a414d307a25712d, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: f71c06fdbc5d5f943a414d307a25712d, type: 3}
+    - {fileID: 6937817954938267909, guid: e4fb7f551f7e9c944b46421388688974, type: 3}
+    - {fileID: -6470460504253458178, guid: 91e5fb913a9ca204c8a95173699fd841, type: 3}
+    - {fileID: -4178046375966092550, guid: 99d35a7fb801a434daa00c6ac86d9198, type: 3}
+    - {fileID: 4130640169021434097, guid: eb5bacecb2511164fae4af5796ec76b8, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 8
+    thumbnail: {fileID: -855298285791758126, guid: 7e8d670dced17c54eb59f3a58369921b, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 7e8d670dced17c54eb59f3a58369921b, type: 3}
+    - {fileID: 6937817954938267909, guid: 49069e2fa1c32f74b9dafa6ba6faf9ce, type: 3}
+    - {fileID: -6470460504253458178, guid: 7f60add5c8ac7a0429bcb65c1cd4b9c5, type: 3}
+    - {fileID: -4178046375966092550, guid: a8632efa29c546b448130f32540e584e, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 9
+    thumbnail: {fileID: -855298285791758126, guid: 5807c4954fb662948ad477e6fcb8affa, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 5807c4954fb662948ad477e6fcb8affa, type: 3}
+    - {fileID: 6937817954938267909, guid: 8741c4480ba4a2d4ebca2f3c24537058, type: 3}
+    - {fileID: -6470460504253458178, guid: 38d7b278ceec77247a5fe314db739c1e, type: 3}
+    - {fileID: -4178046375966092550, guid: e1383717889eb014d90e0b60e59c736e, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 10
+    thumbnail: {fileID: -855298285791758126, guid: 55a08e53166ce784da62767b9b6fcffc, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 55a08e53166ce784da62767b9b6fcffc, type: 3}
+    - {fileID: 6937817954938267909, guid: bcba1571647592b4282a8d4458287589, type: 3}
+    - {fileID: -6470460504253458178, guid: eacab2113a88d6548a726d364e4d5fdb, type: 3}
+    - {fileID: -4178046375966092550, guid: f29fda377b870c54ea8c5479b0cbaa6b, type: 3}
+    - {fileID: 4130640169021434097, guid: 04bd65fbf3b4f83488e25cd81e0bf26d, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 11
+    thumbnail: {fileID: -855298285791758126, guid: ba49c246dd792d5429cd7d909c0e1b20, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: ba49c246dd792d5429cd7d909c0e1b20, type: 3}
+    - {fileID: 6937817954938267909, guid: 007ca63bfd410024ba3c161893177b56, type: 3}
+    - {fileID: -6470460504253458178, guid: 0a0fc81d83738c144aa8faee1641ef63, type: 3}
+    - {fileID: -4178046375966092550, guid: 3d29abfe4d2d02a4497ff4d279165be6, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 12
+    thumbnail: {fileID: -855298285791758126, guid: 7a4637eb89a7a5643b0b4e93fd2698f5, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 7a4637eb89a7a5643b0b4e93fd2698f5, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 13
+    thumbnail: {fileID: -855298285791758126, guid: c8d1ebf0c16aac94cb1417f3e30e8d4f, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: c8d1ebf0c16aac94cb1417f3e30e8d4f, type: 3}
+    - {fileID: 6937817954938267909, guid: 4e64a65dff85f534a95e95089d7672eb, type: 3}
+    - {fileID: -6470460504253458178, guid: e0ab8aa1534b46e47b91ed2b8d229871, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 14
+    thumbnail: {fileID: -855298285791758126, guid: 8a5096a7236ea9341a957724d7dc1cf9, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 8a5096a7236ea9341a957724d7dc1cf9, type: 3}
+    - {fileID: 6937817954938267909, guid: bd05ca3ee1433d1448506bdd8d0f60ae, type: 3}
+    - {fileID: -6470460504253458178, guid: ca092d5a12183b84a8decf9261c42e78, type: 3}
+    - {fileID: -4178046375966092550, guid: 697762e0714b19646bc44215061493af, type: 3}
+    - {fileID: 4130640169021434097, guid: 437b671fa250a094f8feca5c826d8d15, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: 15
+    thumbnail: {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 0
+    sceneName: 
+  - title: "\uBBF8\uB2C8\uAC8C\uC7841"
+    thumbnail: {fileID: -7822450945270125831, guid: 4adf744bce3c807468bc9f7cb15f05a0, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 1
+    sceneName: MiniGame
+  - title: "\uBBF8\uB2C8\uAC8C\uC7842"
+    thumbnail: {fileID: 8637676230178160127, guid: a77783cb6c3f124439a439fea689cd2f, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 1
+    sceneName: MiniGame2
+  - title: "\uBBF8\uB2C8\uAC8C\uC7844"
+    thumbnail: {fileID: 2183290986312741504, guid: 1cb6629698876f746890781adf9e1e34, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 1
+    sceneName: MiniGame4
+  - title: "\uBBF8\uB2C8\uAC8C\uC7845"
+    thumbnail: {fileID: -3930354297002528186, guid: 80965e6ae1cea4344861a3f08b604db2, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 1
+    sceneName: MiniGame5
+  - title: "\uBBF8\uB2C8\uAC8C\uC7846"
+    thumbnail: {fileID: -6691384932891731006, guid: be72e1433f6526845aa581a6c67ccdf0, type: 3}
+    pages:
+    - {fileID: -855298285791758126, guid: 50501dc2b4f01ad4eaa20249a95e10d6, type: 3}
+    - {fileID: 6937817954938267909, guid: 629fc7dec144dc747bc103e4f10b78e0, type: 3}
+    - {fileID: -6470460504253458178, guid: 83eb0d38725311147833bbebaeda3c11, type: 3}
+    - {fileID: -4178046375966092550, guid: 5be8356a3fcaaf5469a152e2184893d3, type: 3}
+    isMiniGamePost: 1
+    sceneName: MiniGame6
   miniGameReelChance: 0.3
   preventDuplicateOnScreen: 1
   backgroundImage: {fileID: 0}
@@ -2584,7 +2839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f8a4f5d9c3d4af0a7b52a4ad6e2d901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMental: 51
+  maxMental: 100
   currentMental: 100
   lowMentalThreshold: 50
   mentalText: {fileID: 0}

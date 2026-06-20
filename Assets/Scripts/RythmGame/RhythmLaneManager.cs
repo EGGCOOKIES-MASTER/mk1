@@ -11,10 +11,11 @@ public class RhythmLaneManager : MonoBehaviour
     public Transform judgmentLine;
     public TextMeshProUGUI scoreText;
 
-    [Header("UI 연결")]
+    [Header("UI 연결 (게임오버/클리어 분리)")]
     public JudgmentEffect judgmentEffect;
-    public GameObject resultPanel;
-    public TextMeshProUGUI finalScoreText;
+    public GameObject gameOverPanel;     // ⭐️ [변경] 게임오버 전용 판넬
+    public GameObject gameClearPanel;    // ⭐️ [변경] STAGE CLEAR 전용 판넬
+    public TextMeshProUGUI finalScoreText; // 결과창에 띄워줄 최종 점수 텍스트
     public Image[] heartImages;
 
     [Header("새로 추가된 콤보 UI")]
@@ -35,7 +36,10 @@ public class RhythmLaneManager : MonoBehaviour
 
     void Start()
     {
-        if (resultPanel != null) resultPanel.SetActive(false);
+        // 시작할 때 두 판넬을 모두 안전하게 닫고 시작합니다.
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (gameClearPanel != null) gameClearPanel.SetActive(false);
+
         if (comboText != null) comboText.text = ""; // 시작할 땐 콤보 숨기기
 
         currentHP = heartImages.Length;
@@ -46,12 +50,14 @@ public class RhythmLaneManager : MonoBehaviour
 
     void Update()
     {
-        if (isGameOver) return;
+        // 게임오버거나 클리어 상태라면 타이머 및 노트를 멈춥니다.
+        if (isGameOver || didClearGame) return;
 
         // 1. 제한 시간 타이머
         gameTimer -= Time.deltaTime;
         if (gameTimer <= 0)
         {
+            // 제한 시간을 모두 버티면 성공! (isFailed = false)
             EndGame(false);
             return;
         }
@@ -120,7 +126,7 @@ public class RhythmLaneManager : MonoBehaviour
     // 노트를 놓쳤을 때 (MISS)
     public void MissNote()
     {
-        if (isGameOver) return;
+        if (isGameOver || didClearGame) return;
 
         judgmentEffect.ShowText("MISS...", Color.red);
 
@@ -128,11 +134,12 @@ public class RhythmLaneManager : MonoBehaviour
         UpdateComboUI();
 
         currentHP--;
-        if (currentHP >= 0 && currentHP < heartImages.Length)
+        if (heartImages != null && currentHP >= 0 && currentHP < heartImages.Length)
         {
             heartImages[currentHP].gameObject.SetActive(false);
         }
 
+        // 목숨이 0 이하가 되면 게임오버! (isFailed = true)
         if (currentHP <= 0)
         {
             EndGame(true);
@@ -159,31 +166,49 @@ public class RhythmLaneManager : MonoBehaviour
         }
     }
 
+    // ⭐️ [핵심 업그레이드] 조건에 따라 판넬을 분리하여 활성화시키는 함수
     void EndGame(bool isFailed)
     {
-        isGameOver = true;
-        didClearGame = !isFailed;
-
+        // 현재 화면에 남아있는 모든 노트들을 깔끔하게 지워줍니다.
         RhythmNote[] activeNotes = FindObjectsByType<RhythmNote>(FindObjectsSortMode.None);
-        foreach (RhythmNote note in activeNotes) note.DestroyNote();
-
-        if (resultPanel != null)
+        foreach (var note in activeNotes)
         {
-            resultPanel.SetActive(true);
+            note.DestroyNote();
+        }
+
+        if (isFailed)
+        {
+            // 💀 게임 오버 처리
+            isGameOver = true;
+            didClearGame = false;
+
+            if (gameOverPanel != null) gameOverPanel.SetActive(true);
             if (finalScoreText != null)
             {
-                if (isFailed)
-                {
-                    finalScoreText.text = "GAME OVER\nSCORE: " + score;
-                }
-                else
-                {
-                    finalScoreText.text = "STAGE CLEAR!\nSCORE: " + score;
-                }
+                finalScoreText.text = "GAME OVER\nSCORE: " + score;
+            }
+        }
+        else
+        {
+            // 🎉 스테이지 클리어 처리
+            isGameOver = false;
+            didClearGame = true;
+
+            if (gameClearPanel != null) gameClearPanel.SetActive(true);
+            if (finalScoreText != null)
+            {
+                finalScoreText.text = "STAGE CLEAR!\nSCORE: " + score;
             }
         }
     }
 
+    // 다시하기 버튼 (현재 리듬게임 씬 재로드)
+    public void ClickRetry()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // 로비/홈으로 돌아가기 버튼
     public void GoToLobby()
     {
         if (didClearGame && GameManager.Instance != null)

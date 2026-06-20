@@ -152,6 +152,23 @@ public class GameManager : MonoBehaviour
     {
         hasPendingInitialState = true;
         pendingInitialState = state;
+
+        if (Instance != null)
+        {
+            Instance.SetStateWithoutUI(state);
+        }
+    }
+
+    public static void ReturnToAlgorithmScreen()
+    {
+        SetPendingInitialState(GameState.Algorithm);
+
+        if (Instance != null)
+        {
+            Instance.EndReelsSessionAndDrain("manual_exit");
+        }
+
+        SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
     }
 
     private static GameState ConsumePendingInitialState(GameState fallbackState)

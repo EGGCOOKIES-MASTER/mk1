@@ -3,18 +3,18 @@ using UnityEngine.UI;
 
 public class ShooterItem : MonoBehaviour
 {
-    public bool isSkull = false; // true면 해골(점수), false면 하트(함정)
-    public float riseSpeed = 300f; // 위로 떠오르는 속도
+    public bool isSkull = false;
+    public float riseSpeed = 300f;
+
+    [Header("타겟 이미지 설정")]
+    public Sprite badSprite;  // 빌런/해골 이미지 들어갈 칸
+    public Sprite goodSprite; // 보너스/하트 이미지 들어갈 칸
 
     private Button button;
-    private ShooterGameManager gameManager;
 
     void Start()
     {
         button = GetComponent<Button>();
-        gameManager = FindFirstObjectByType<ShooterGameManager>();
-
-        // 버튼을 클릭(사격)했을 때 실행될 함수 연결
         if (button != null)
         {
             button.onClick.AddListener(OnShot);
@@ -23,40 +23,35 @@ public class ShooterItem : MonoBehaviour
 
     void Update()
     {
-        // 매 프레임마다 위(Vector3.up)로 이동
+        if (ShooterGameManager.Instance != null && ShooterGameManager.Instance.IsFinished()) return;
+
+        // 매 프레임 위로 상승
         transform.Translate(Vector3.up * riseSpeed * Time.deltaTime);
 
-        // 화면 꼭대기 위로 완전히 벗어나면 자동 삭제
-        if (transform.localPosition.y > 1100f)
+        // 화면 천장(Y: 650) 위로 완전히 벗어나면 자동 삭제
+        if (transform.localPosition.y > 650f)
         {
-            // 해골을 못 맞추고 놓쳤을 때의 패널티 처리 (필요시)
-            if (isSkull && gameManager != null)
+            if (isSkull && ShooterGameManager.Instance != null)
             {
-                gameManager.MissSkull();
+                ShooterGameManager.Instance.MissSkull(); // BAD를 놓치면 패널티 데미지
             }
             Destroy(gameObject);
         }
     }
 
-    // 이 아이템을 총으로 쐈을 때 (클릭했을 때)
     void OnShot()
     {
-        if (gameManager == null) return;
+        if (ShooterGameManager.Instance == null || ShooterGameManager.Instance.IsFinished()) return;
 
         if (isSkull)
         {
-            // 해골을 맞추면 점수 획득!
-            gameManager.AddScore(10);
-            Debug.Log("💀 해골 격추! +10점");
+            ShooterGameManager.Instance.AddScore(10); // BAD 맞추면 점수업!
         }
         else
         {
-            // 실수로 하트를 맞추면 데미지!
-            gameManager.TakeDamage();
-            Debug.Log("💥 앗! 하트를 쐈습니다! 데미지!");
+            ShooterGameManager.Instance.TakeDamage(); // GOOD 잘못 쏘면 감점/피격!
         }
 
-        // 총에 맞았으므로 화면에서 즉시 파괴
         Destroy(gameObject);
     }
 }

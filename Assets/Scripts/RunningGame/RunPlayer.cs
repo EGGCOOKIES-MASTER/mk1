@@ -6,13 +6,20 @@ public class RunPlayer : MonoBehaviour
     public float gravity = 2000f;    // 아래로 떨어지는 중력 힘
 
     private float velocityY = 0f;    // Y축 현재 속도
-    private float groundY = -180f; // 방금 인스펙터에 수정한 Pos Y 값과 똑같이 맞춰야 점프 후 제자리에 착지합니다!   // 발바닥 착지 기준점 (플레이어 이미지 중심점 위치)
+    private float groundY;           // 시작 위치를 바닥 기준으로 사용
     private bool isGrounded = true;  // 바닥에 서 있는지 여부
+
+    public float GroundY => groundY;
+
+    void Start()
+    {
+        groundY = transform.localPosition.y;
+    }
 
     void Update()
     {
         // 1. 바닥에 있을 때 스페이스바나 마우스 클릭을 누르면 점프!
-        if (isGrounded && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
+        if (isGrounded && WasJumpPressed())
         {
             velocityY = jumpForce;
             isGrounded = false;
@@ -34,6 +41,23 @@ public class RunPlayer : MonoBehaviour
             velocityY = 0f;
             isGrounded = true;
         }
+    }
+
+    private bool WasJumpPressed()
+    {
+#if ENABLE_INPUT_SYSTEM
+        if (UnityEngine.InputSystem.Keyboard.current?.spaceKey.wasPressedThisFrame == true ||
+            UnityEngine.InputSystem.Pointer.current?.press.wasPressedThisFrame == true)
+        {
+            return true;
+        }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+        return Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0);
+#else
+        return false;
+#endif
     }
 
     // 장애물과 부딪혔을 때 처리 (충돌)

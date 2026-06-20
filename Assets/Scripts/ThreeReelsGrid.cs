@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ThreeReelsGrid : MonoBehaviour
@@ -12,7 +13,8 @@ public class ThreeReelsGrid : MonoBehaviour
     {
         public string title;
         public Sprite thumbnail;
-        public Sprite[] postImages;
+        [FormerlySerializedAs("postImages")]
+        public Sprite[] pages;
         public bool isMiniGamePost;
         public string sceneName = "MiniGame";
     }
@@ -27,7 +29,7 @@ public class ThreeReelsGrid : MonoBehaviour
 
     [Header("Controls")]
     [SerializeField] private Button refreshButton;
-    [SerializeField] private ReelPostViewer postViewer;
+    [SerializeField] private ReelViewerController postViewer;
     [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text refreshMessageTMPText;
     [SerializeField] private string refreshMessageObjectName = "RefreshMessageText";
@@ -65,6 +67,7 @@ public class ThreeReelsGrid : MonoBehaviour
     private void Awake()
     {
         AutoBindButtons();
+        AutoBindPostViewer();
         AutoBindRefreshMessageText();
         BindButtonEvents();
     }
@@ -154,6 +157,24 @@ public class ThreeReelsGrid : MonoBehaviour
             backButton.onClick.RemoveListener(GoToLoginScreen);
             backButton.onClick.AddListener(GoToLoginScreen);
         }
+    }
+
+    private void AutoBindPostViewer()
+    {
+        if (postViewer != null)
+        {
+            return;
+        }
+
+        postViewer = FindFirstObjectByType<ReelViewerController>(FindObjectsInactive.Include);
+        if (postViewer != null)
+        {
+            return;
+        }
+
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
+        Transform parent = parentCanvas != null ? parentCanvas.transform : transform.root;
+        postViewer = ReelViewerController.CreateDefault(parent);
     }
 
     private void BindSlotButton(Button button, int slotIndex)
@@ -511,7 +532,7 @@ public class ThreeReelsGrid : MonoBehaviour
     {
         if (postViewer == null)
         {
-            Debug.LogWarning($"Reel '{selectedReel.title}' is not a mini game post, but no ReelPostViewer is assigned.");
+            Debug.LogWarning($"Reel '{selectedReel.title}' is not a mini game post, but no ReelViewerController is assigned.");
             return;
         }
 

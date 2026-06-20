@@ -1,21 +1,67 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ShooterGameManager : MonoBehaviour
 {
-    [Header("프리팹 연결")]
-    public GameObject itemPrefab; // 아까 만든 TargetItem 프리팹
-    public Transform canvasTransform; // 아이템이 생성될 Canvas
+    public static ShooterGameManager Instance;
+
+    [Header("프리팹 및 캔버스 연결")]
+    public GameObject itemPrefab;
+    public Transform canvasTransform;
+
+    [Header("UI 패널 및 텍스트 연결")]
+    public GameObject gameOverPanel;
+    public GameObject gameClearPanel;
+    public TMPro.TextMeshProUGUI timerText;
+    public TMPro.TextMeshProUGUI finalScoreText;
+    public Image[] heartImages;
 
     [Header("게임 세팅")]
-    public float spawnInterval = 0.8f; // 아이템이 리스폰되는 간격 (초)
-    private float spawnTimer = 0f;
+    public float spawnInterval = 0.6f;   // 빌런 젠 속도
+    public float targetClearTime = 30f;  // 목표 버티기 시간
+    public int maxLives = 3;
 
+    private float spawnTimer = 0f;
+    private float survivalTime = 0f;
     private int score = 0;
-    private int hp = 3;
+    private int currentLives;
+    private bool isGameFinished = false;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        currentLives = maxLives;
+        survivalTime = 0f;
+        score = 0;
+        isGameFinished = false;
+
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (gameClearPanel != null) gameClearPanel.SetActive(false);
+
+        UpdateHeartUI();
+        UpdateTimerUI();
+    }
 
     void Update()
     {
-        // 주기적으로 하트나 해골을 생성
+        if (isGameFinished) return;
+
+        // 1. 시간 흐름 및 승리 체크
+        survivalTime += Time.deltaTime;
+        UpdateTimerUI();
+
+        if (survivalTime >= targetClearTime)
+        {
+            GameClear();
+            return;
+        }
+
+        // 2. 주기적 스폰
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnInterval)
         {
@@ -26,61 +72,143 @@ public class ShooterGameManager : MonoBehaviour
 
     void SpawnItem()
     {
-        if (itemPrefab == null || canvasTransform == null) return;
+        if (itemPrefab == null || canvasTransform == null || isGameFinished) return;
 
-        // 1. 아이템 생성 및 캔버스의 자식으로 설정
         GameObject newItem = Instantiate(itemPrefab, canvasTransform);
 
-        // 🔥 [PC 가로화면 최적화 변경] 
-        // 1920 해상도 기준, 좌우 넓은 범위(-800 ~ 800)에서 무작위로 나오게 설정합니다.
-        float randomX = Random.Range(-800f, 800f);
+        float canvasWidth = canvasTransform.GetComponent<RectTransform>().rect.width;
+        float minX = -(canvasWidth / 2f) + 150f;
+        float maxX = (canvasWidth / 2f) - 150f;
+        float randomX = Random.Range(minX, maxX);
 
-        // 1080 해상도 기준, 화면 맨 밑바닥(-600 지점)에서 생성되어 떠오르게 합니다.
+        // 화면 밑바닥(-600)에서 리스폰
         newItem.transform.localPosition = new Vector3(randomX, -600f, 0f);
 
-        // 3. 50% 확률로 해골 혹은 하트로 세팅하기
         ShooterItem shooterItem = newItem.GetComponent<ShooterItem>();
         if (shooterItem == null) shooterItem = newItem.AddComponent<ShooterItem>();
 
-        TMPro.TextMeshProUGUI textComponent = newItem.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        // 버튼의 Image 컴포넌트를 가져옵니다.
+        Image itemImage = newItem.GetComponent<Image>();
 
-        if (Random.value > 0.5f)
+        // 프리팹 내부 스크립트에 등록한 원본 스프라이트 2개를 받아옵니다.
+        Sprite badSprite = shooterItem.badSprite;
+        Sprite goodSprite = shooterItem.goodSprite;
+
+        if (Random.value > 0.4f) // 60% 확률로 나쁜 타겟 생성
         {
-            // 해골 대신 맞추어야 할 타겟 빌런 표시 (예: BAD 또는 X)
             shooterItem.isSkull = true;
-            shooterItem.riseSpeed = Random.Range(200f, 400f);
-            if (textComponent != null) textComponent.text = "BAD"; // 💀 대신 글자로!
+            shooterItem.riseSpeed = Random.Range(300f, 550f);
+
+            // BAD 이미지로 교체!
+            if (itemImage != null && badSprite != null)
+            {
+                itemImage.sprite = badSprite;
+            }
         }
-        else
+        else // 40% 확률로 맞추면 안 되는 선량한 타겟 생성
         {
-            // 하트 대신 쏘면 안 되는 보너스 표시 (예: GOOD 또는 O)
             shooterItem.isSkull = false;
-            shooterItem.riseSpeed = Random.Range(150f, 300f);
-            if (textComponent != null) textComponent.text = "GOOD"; // ❤️ 대신 글자로!
+            shooterItem.riseSpeed = Random.Range(200f, 400f);
+
+            // GOOD 이미지로 교체!
+            if (itemImage != null && goodSprite != null)
+            {
+                itemImage.sprite = goodSprite;
+            }
         }
     }
 
-    // 점수 추가 함수
     public void AddScore(int amount)
     {
+        if (isGameFinished) return;
         score += amount;
-        Debug.Log($"🎯 현재 점수: {score}점");
     }
 
-    // 하트를 잘못 쐈을 때 목숨 감소 함수
     public void TakeDamage()
     {
-        hp--;
-        Debug.Log($"❤️ 남은 목숨: {hp}");
-        if (hp <= 0)
+        if (isGameFinished) return;
+
+        currentLives--;
+        UpdateHeartUI();
+
+        if (currentLives <= 0)
         {
-            Debug.Log("💀 게임 오버! 하트를 너무 많이 쐈습니다.");
+            GameOver();
         }
     }
 
-    // 해골을 놓치고 화면 밖으로 보냈을 때 실행할 규칙 (필요시 패널티 추가 가능)
     public void MissSkull()
     {
-        Debug.Log("🏃‍♂️ 해골 빌런이 도망쳤습니다!");
+        // BAD를 안 쏘고 놓쳐서 화면 위로 보내버리면 목숨이 깎이는 패널티!
+        TakeDamage();
+    }
+
+    public bool IsFinished()
+    {
+        return isGameFinished;
+    }
+
+    void UpdateHeartUI()
+    {
+        if (heartImages == null) return;
+        for (int i = 0; i < heartImages.Length; i++)
+        {
+            if (heartImages[i] != null)
+            {
+                heartImages[i].gameObject.SetActive(i < currentLives);
+            }
+        }
+    }
+
+    void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            int seconds = Mathf.FloorToInt(survivalTime);
+            timerText.text = $"TIME: {seconds} / {targetClearTime}s\nSCORE: {score}";
+        }
+    }
+
+    public void GameOver()
+    {
+        isGameFinished = true;
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+        SetFinalText("GAME OVER");
+        ClearAllItems();
+    }
+
+    public void GameClear()
+    {
+        isGameFinished = true;
+        if (gameClearPanel != null) gameClearPanel.SetActive(true);
+        SetFinalText("STAGE CLEAR!");
+        ClearAllItems();
+    }
+
+    void SetFinalText(string title)
+    {
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = $"{title}\nFINAL SCORE: {score}";
+        }
+    }
+
+    void ClearAllItems()
+    {
+        ShooterItem[] items = FindObjectsByType<ShooterItem>(FindObjectsSortMode.None);
+        foreach (var item in items)
+        {
+            if (item != null) Destroy(item.gameObject);
+        }
+    }
+
+    public void ClickRetry()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToLobby()
+    {
+        GameManager.ReturnToAlgorithmScreen();
     }
 }

@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 7775681024357032290}
   - component: {fileID: 4962591489191281021}
   - component: {fileID: 3710705866574361775}
+  - component: {fileID: 8001826432342905774}
   m_Layer: 5
   m_Name: TargetItem
   m_TagString: Untagged
@@ -258,3 +259,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8001826432342905774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9057194051208353585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab55da7075cc864a9d1862d48c03184, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShooterItem
+  isSkull: 0
+  riseSpeed: 300
+  badSprite: {fileID: -1349455439597341446, guid: 75e71350289921d4896d654014c411ed, type: 3}
+  goodSprite: {fileID: -6890070817249591481, guid: f85cb1bc439c37d478a1cd185e183829, type: 3}

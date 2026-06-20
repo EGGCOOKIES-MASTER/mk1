@@ -58,7 +58,7 @@ public class ReelPostViewer : MonoBehaviour
 
         if (currentImages.Length == 0)
         {
-            Debug.LogWarning($"Reel '{post.title}' has no thumbnail or postImages to show.");
+            Debug.LogWarning($"Reel '{post.title}' has no thumbnail or pages to show.");
             return;
         }
 
@@ -68,9 +68,9 @@ public class ReelPostViewer : MonoBehaviour
 
     private Sprite[] GetImagesForPost(ThreeReelsGrid.ReelEntry post)
     {
-        if (post.postImages != null && post.postImages.Length > 0)
+        if (post.pages != null && post.pages.Length > 0)
         {
-            return post.postImages;
+            return post.pages;
         }
 
         if (post.thumbnail != null)
@@ -100,16 +100,26 @@ public class ReelPostViewer : MonoBehaviour
         {
             titleText.text = currentPost.title ?? string.Empty;
         }
+
+        if (previousButton != null)
+        {
+            previousButton.gameObject.SetActive(currentImages.Length > 1 && currentImageIndex > 0);
+        }
+
+        if (nextButton != null)
+        {
+            nextButton.gameObject.SetActive(currentImages.Length > 1 && currentImageIndex < currentImages.Length - 1);
+        }
     }
 
     private void ShowNext()
     {
-        if (currentImages == null || currentImages.Length == 0)
+        if (currentImages == null || currentImages.Length == 0 || currentImageIndex >= currentImages.Length - 1)
         {
             return;
         }
 
-        currentImageIndex = (currentImageIndex + 1) % currentImages.Length;
+        currentImageIndex++;
         ShowCurrent();
 
         // Reaching the last image also counts as viewing the reel.
@@ -121,12 +131,12 @@ public class ReelPostViewer : MonoBehaviour
 
     private void ShowPrevious()
     {
-        if (currentImages == null || currentImages.Length == 0)
+        if (currentImages == null || currentImages.Length == 0 || currentImageIndex <= 0)
         {
             return;
         }
 
-        currentImageIndex = (currentImageIndex - 1 + currentImages.Length) % currentImages.Length;
+        currentImageIndex--;
         ShowCurrent();
     }
 
